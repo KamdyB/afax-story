@@ -1,0 +1,265 @@
+/* ============================================================
+   AFAX Story — placeholder visual system
+   Neutral, editorial, mobile-first. Redesign by editing tokens.
+   ============================================================ */
+
+:root {
+  --color-bg: #faf9f7;
+  --color-surface: #f2efe9;
+  --color-ink: #1f1d1a;
+  --color-ink-soft: #5c584f;
+  --color-line: #ddd8ce;
+  --color-accent: #8a3324;
+
+  --font-serif: Georgia, "Iowan Old Style", "Times New Roman", serif;
+  --font-sans: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+
+  --measure: 36rem;
+  --gutter: 1.25rem;
+}
+
+@media (min-width: 48em) {
+  :root {
+    --gutter: 2.5rem;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-serif);
+  font-size: clamp(1rem, 0.93rem + 0.3vw, 1.15rem);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Skip link ------------------------------------------------ */
+
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: -9999px;
+  z-index: 10;
+  padding: 0.6rem 1rem;
+  background: var(--color-ink);
+  color: var(--color-bg);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+}
+
+.skip-link:focus {
+  left: 0;
+}
+
+/* Masthead -------------------------------------------------- */
+
+.masthead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 1.1rem var(--gutter);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.masthead__brand {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.masthead__tag {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: var(--color-ink-soft);
+}
+
+/* Story column ---------------------------------------------- */
+
+.story {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: clamp(2.5rem, 7vw, 5.5rem) var(--gutter) clamp(3rem, 8vw, 6rem);
+}
+
+.story__scene {
+  width: 100%;
+  max-width: calc(var(--measure) + 4rem);
+  animation: scene-in 300ms ease-out both;
+}
+
+.story__scene:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 10px;
+}
+
+.story__kicker {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: 1.25rem;
+}
+
+.story__title {
+  font-size: clamp(1.75rem, 1.3rem + 2.2vw, 2.9rem);
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  text-wrap: balance;
+}
+
+.story__text {
+  max-width: var(--measure);
+}
+
+.story__text p + p {
+  margin-top: 1.1em;
+}
+
+/* Message bubble -------------------------------------------- */
+
+.message-bubble {
+  margin: 2.5rem 0;
+  max-width: var(--measure);
+  padding: 1.25rem 1.4rem 1.4rem;
+  border: 1px solid var(--color-line);
+  border-radius: 2px;
+  background: var(--color-surface);
+}
+
+.message-bubble__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.9rem;
+  border-bottom: 1px solid var(--color-line);
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+}
+
+.message-bubble__sender {
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.message-bubble__body p {
+  font-style: italic;
+}
+
+/* Choices ---------------------------------------------------- */
+
+.story__choices {
+  margin-top: 3rem;
+  max-width: var(--measure);
+  border-top: 1px solid var(--color-line);
+}
+
+.choice-button {
+  appearance: none;
+  width: 100%;
+  display: block;
+  text-align: left;
+  padding: 1.05rem 0.35rem;
+  border: 0;
+  border-bottom: 1px solid var(--color-line);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.choice-button__label {
+  display: block;
+  font-size: 1.02rem;
+  font-weight: 600;
+}
+
+.choice-button__hint {
+  display: block;
+  margin-top: 0.15rem;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  color: var(--color-ink-soft);
+}
+
+.choice-button:hover {
+  background-color: var(--color-surface);
+}
+
+.choice-button:active {
+  background-color: var(--color-line);
+}
+
+.choice-button:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: -2px;
+}
+
+/* Colophon --------------------------------------------------- */
+
+.colophon {
+  border-top: 1px solid var(--color-line);
+  padding: 1.1rem var(--gutter) 1.4rem;
+}
+
+.colophon p {
+  max-width: var(--measure);
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--color-ink-soft);
+}
+
+/* Motion ------------------------------------------------------ */
+
+@keyframes scene-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .story__scene {
+    animation: none;
+  }
+  .choice-button {
+    transition: none;
+  }
+}
