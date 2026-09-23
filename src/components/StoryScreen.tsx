@@ -4,7 +4,7 @@ import ChoiceButton from "./ChoiceButton";
 import MessageBubble from "./MessageBubble";
 import MessageWall from "./MessageWall";
 import TypingCue from "./TypingCue";
-import { playMessagePing } from "../audio";
+import { playMessagePing, playWallWipe } from "../audio";
 
 interface StoryScreenProps {
   scene: Scene;
@@ -12,16 +12,54 @@ interface StoryScreenProps {
   onChoice: (nextSceneId: string) => void;
 }
 
+/** Delay between narration words, in milliseconds. */
+const WORD_DELAY_MS = 45;
+
+interface WordEntry {
+  word: string;
+  delay: number;
+}
+
+interface NarrationBlock {
+  key: number;
+  words: WordEntry[];
+}
+
+/** Splits narration into word spans; delays run continuously across paragraphs. */
+function buildNarration(paragraphs: string[]): NarrationBlock[] {
+  const blocks: NarrationBlock[] = [];
+  let wordOffset = 0;
+  paragraphs.forEach((paragraph, index) => {
+    const words = paragraph.split(/\s+/).filter(Boolean);
+    blocks.push({
+      key: index,
+      words: words.map((word, wordIndex) => ({
+        word,
+        delay: (wordOffset + wordIndex) * WORD_DELAY_MS,
+      })),
+    });
+    wordOffset += words.length;
+  });
+  return blocks;
+}
+
 /** Fixed render order: material → narration → choices. No chapter labels. */
 export default function StoryScreen({ scene, onChoice }: StoryScreenProps) {
   const articleRef = useRef<HTMLElement | null>(null);
   const lastSceneIdRef = useRef<string | null>(null);
+  const narration = buildNarration(scene.paragraphs);
 
-  // On scene change (not first render): scroll to top and move focus so
-  // keyboard and screen-reader users land in the new wall state.
+  // On scene change (not first render): paper-wipe, scroll to top, move focus.
   useEffect(() => {
-    if (lastSceneIdRef.current === scene.id) return;
+    const previousSceneId = lastSceneIdRef.current;
+    if (previousSceneId === scene.id) return;
     lastSceneIdRef.current = scene.id;
+    if (
+      previousSceneId !== null &&
+      !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      playWallWipe();
+    }
     window.scrollTo({ top: 0, behavior: "auto" });
     articleRef.current?.focus({ preventScroll: true });
   }, [scene.id]);
@@ -34,7 +72,6 @@ export default function StoryScreen({ scene, onChoice }: StoryScreenProps) {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     playMessagePing();
   };
-
 
   return (
     <main className="story" id="story">
@@ -51,10 +88,20 @@ export default function StoryScreen({ scene, onChoice }: StoryScreenProps) {
             {heading}
           </h1>
 
-          {scene.paragraphs.length > 0 ? (
+          {narration.length > 0 ? (
             <div className="story__text">
-              {scene.paragraphs.map((paragraph, index) => (
-                <p key={index}>{paragraph}</p>
+              {narration.map((block) => (
+                <p key={block.key}>
+                  {block.words.map((entry) => (
+                    <span
+                      key={entry.delay}
+                      className="story__word"
+                      style={{ animationDelay: `${entry.delay}ms` }}
+                    >
+                      {entry.word}{" "}
+                    </span>
+                  ))}
+                </p>
               ))}
             </div>
           ) : null}

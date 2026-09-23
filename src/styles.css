@@ -1203,15 +1203,13 @@ html[data-flip="in"] .story__page {
   right: 0.9rem;
   z-index: 70;
 }
-/* "More is coming" cue: pulses while the cascade arrives, then fades. */
+/* "More is coming" cue: dots burst in step with each arriving bubble. */
 .story__cue {
   display: flex;
   align-items: center;
   gap: 0.35rem;
   padding: 0.4rem 0.15rem 0.1rem;
-  animation:
-    cue-pulse 1.4s ease-in-out infinite,
-    cue-out 500ms var(--cue-end, 12s) forwards;
+  animation: cue-out 500ms var(--cue-end, 12s) forwards;
 }
 
 .story__cue-dot {
@@ -1219,15 +1217,17 @@ html[data-flip="in"] .story__page {
   height: 6px;
   border-radius: 999px;
   background: var(--text-muted);
+  animation: cue-burst 5s ease-in-out infinite;
 }
 
-@keyframes cue-pulse {
+@keyframes cue-burst {
   0%,
+  12%,
   100% {
-    transform: translateY(0);
+    transform: scale(1);
   }
-  50% {
-    transform: translateY(-3px);
+  6% {
+    transform: scale(1.4);
   }
 }
 
@@ -1242,4 +1242,22 @@ html[data-flip="in"] .story__page {
   .story__cue {
     display: none;
   }
+  .story__word {
+    animation: none;
+    opacity: 1;
+  }
 }
+/* Narration writes itself onto the wall, one word at a time. */
+.story__word {
+  animation: word-in 240ms ease both;
+}
+
+@keyframes word-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
