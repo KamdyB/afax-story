@@ -550,7 +550,7 @@ const story: Record<string, Scene> = {
       {
         id: "m2",
         sender: "@jozi_musicfan",
-        body: "Boycott South African artists.",
+        body: "Boycott South African artists?",
         channel: true,
       },
       {
