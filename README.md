@@ -18,9 +18,7 @@ Read slowly.
 
 Click when something catches your attention.
 
-There is no correct answer.
-
-The story changes as you follow the evidence.
+Your choices change which voices you meet on the wall, and every path ends at the same question.
 
 ---
 

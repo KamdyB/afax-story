@@ -486,7 +486,7 @@ const story: Record<string, Scene> = {
         id: "r1",
         sender: "WHAT SHE SAID",
         meta: "SAMA32 · August",
-        body: "“I pray to see a unified Africa.”",
+        body: "“I pray one day to see a unified Africa.”",
         channel: true,
       },
       {
@@ -692,7 +692,7 @@ const story: Record<string, Scene> = {
       "Digital Storytelling for Peacebuilding",
       "Social-media posts shown in this experience are reconstructed composites inspired by public discourse.",
       "#ImiliInstitute #AfricaAgainstXenophobia #UNESCO #Africa",
-      "Context drawn from reporting by Premium Times, The Guardian Nigeria and The Rio Times, July 2026.",
+      "Context drawn from reporting by Premium Times, The Guardian Nigeria and The Rio Times(July 2026), and coverage of her SAMA32 speech by BellaNaija and Pulse Ghana (August 2026).",
       "The Show That Didn’t Happen",
       "How a real grievance became a cross-border argument",
     ],
