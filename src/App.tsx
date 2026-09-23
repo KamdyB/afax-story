@@ -1,32 +1,20 @@
 import { useState } from "react";
-import { getScene, START_SCENE_ID } from "./data/story";
 import StoryScreen from "./components/StoryScreen";
-import ThemeToggle from "./components/ThemeToggle";
+import WallNav from "./components/WallNav";
+import { START_SCENE_ID, getScene } from "./data/story";
+import type { Scene } from "./data/story";
 
 export default function App() {
-  const [scene, setScene] = useState(() => getScene(START_SCENE_ID));
-
-  const handleChoice = (nextSceneId: string) => {
-    setScene(getScene(nextSceneId));
-  };
-
-  // Confrontation points on the wall shift the environment darker.
-  const isTension = scene.mood === "tension";
+  const [scene, setScene] = useState<Scene>(() => getScene(START_SCENE_ID));
 
   return (
-    <div className={`app${isTension ? " app--tension" : ""}`}>
+    <>
+      <WallNav />
       <header className="masthead">
-        <div className="masthead__inner">
-          <div className="masthead__identity">
-            <p className="masthead__overline">
-              How a real grievance became a cross-border argument
-            </p>
-            <p className="masthead__wordmark">THE SHOW THAT DIDN’T HAPPEN</p>
-          </div>
-          <ThemeToggle />
-        </div>
+        <p className="masthead__overline">AFAX Story · Interactive</p>
+        <h1 className="masthead__wordmark">The Show That Didn’t Happen</h1>
       </header>
-      <StoryScreen scene={scene} onChoice={handleChoice} />
-    </div>
+      <StoryScreen scene={scene} onChoice={(next) => setScene(getScene(next))} />
+    </>
   );
 }

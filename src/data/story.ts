@@ -27,7 +27,7 @@ export interface Choice {
 }
 
 export interface StoryAudio {
-  /** Root-relative path, e.g. "/audio/vn01-context.mp3". May not exist yet. */
+  /** Resolved against the deployed base path. May not exist yet. */
   src: string;
   language?: StoryLanguage | undefined;
   transcript?: string | undefined;
@@ -105,18 +105,25 @@ export interface Scene {
 
 export const START_SCENE_ID = "the-wall";
 
+/** Audio resolves against the deployed base path (/afax-story/ on Pages). */
+const audioUrl = (file: string) => `${import.meta.env.BASE_URL}audio/${file}`;
+
 const story: Record<string, Scene> = {
   "the-wall": {
     id: "the-wall",
     type: "narrative",
     title: "TYLA ANNOUNCES LAGOS",
-    paragraphs: ["December 22.", "So she’s coming here?"],
+    paragraphs: [
+      "July. A tour poster lands on the wall.",
+      "Lagos — December 22, 2026.",
+      "So she’s coming here?",
+    ],
     messages: [
       {
         id: "w1",
-        sender: "@TylaOfficial",
-        meta: "Tour announcement",
-        body: "TYLA ANNOUNCES LAGOS — DECEMBER 22",
+        sender: "TOUR ANNOUNCEMENT",
+        meta: "Pinned poster",
+        body: "A*POP WORLD TOUR — LAGOS · DECEMBER 22, 2026",
         channel: true,
       },
       {
@@ -126,7 +133,7 @@ const story: Record<string, Scene> = {
         body: "Renewed xenophobic attacks against Nigerians and other African migrants reported in South Africa.",
         channel: true,
         audio: {
-          src: "/audio/vn01-context.mp3",
+          src: audioUrl("vn01-context.mp3"),
           language: "en",
           durationLabel: "0:18",
         },
@@ -138,9 +145,7 @@ const story: Record<string, Scene> = {
         channel: true,
       },
     ],
-    choices: [
-      { label: "Open the post", next: "the-first-argument" },
-    ],
+    choices: [{ label: "Open the post", next: "the-first-argument" }],
     mood: "digital",
   },
 
@@ -152,9 +157,9 @@ const story: Record<string, Scene> = {
     messages: [
       {
         id: "p1",
-        sender: "@TylaOfficial",
-        meta: "Tour announcement · Dec 22",
-        body: "Tyla announces a Lagos performance — December 22.",
+        sender: "TOUR ANNOUNCEMENT",
+        meta: "A*POP World Tour · Lagos stop",
+        body: "Tyla announces a Lagos performance — December 22, 2026.",
         forwarded: true,
         channel: true,
       },
@@ -203,10 +208,46 @@ const story: Record<string, Scene> = {
     ],
     afterword: ["No verdict is pinned. The wall holds all of it."],
     choices: [
-      { label: "Follow the thread", hint: "Stay with what the wall is saying.", next: "the-silence" },
-      { label: "Ask what it’s about", hint: "Someone finally asks the question.", next: "the-ask" },
-      { label: "Look for her response", hint: "Search the wall for one word from her.", next: "the-silence" },
+      {
+        label: "Follow the thread",
+        hint: "Stay with what the wall is saying.",
+        next: "the-silence",
+      },
+      {
+        label: "Ask what it’s about",
+        hint: "Someone finally asks the question.",
+        next: "the-ask",
+      },
+      {
+        label: "Look for her response",
+        hint: "Search the wall for one word from her.",
+        next: "the-silence",
+      },
     ],
+    mood: "digital",
+  },
+
+  "the-ask": {
+    id: "the-ask",
+    type: "narrative",
+    title: "Someone finally asks.",
+    paragraphs: [],
+    messages: [
+      {
+        id: "a1",
+        sender: "@justasking_",
+        body: "What is it about then?",
+        channel: true,
+      },
+      {
+        id: "a2",
+        sender: "@NaijaFirst",
+        body: "It’s about what we accept. About who answers for it.",
+        channel: true,
+      },
+    ],
+    afterword: ["The argument was never about the music."],
+    choices: [{ label: "Back to the wall", next: "the-silence" }],
     mood: "digital",
   },
 
@@ -227,7 +268,7 @@ const story: Record<string, Scene> = {
     mood: "digital",
   },
 
-   "the-boycott": {
+  "the-boycott": {
     id: "the-boycott",
     type: "narrative",
     title: "The wall splits its voice.",
@@ -266,40 +307,24 @@ const story: Record<string, Scene> = {
       },
     ],
     choices: [
-      { label: "Hear the pushback", hint: "Not everyone on the wall agrees.", next: "the-blame" },
-      { label: "Carry it to its conclusion", hint: "Follow the boycott’s logic to the end.", next: "the-threat" },
-    ],
-    mood: "digital",
-  },
- 
-    "the-ask": {
-    id: "the-ask",
-    type: "narrative",
-    title: "Someone finally asks.",
-    paragraphs: [],
-    messages: [
       {
-        id: "a1",
-        sender: "@justasking_",
-        body: "What is it about then?",
-        channel: true,
+        label: "Hear the pushback",
+        hint: "Not everyone on the wall agrees.",
+        next: "the-blame",
       },
       {
-        id: "a2",
-        sender: "@NaijaFirst",
-        body: "It’s about what we accept. About who answers for it.",
-        channel: true,
+        label: "Carry it to its conclusion",
+        hint: "Follow the boycott’s logic to the end.",
+        next: "the-threat",
       },
     ],
-    afterword: ["The argument was never about the music."],
-    choices: [{ label: "Look closer", next: "the-silence" }],
     mood: "digital",
   },
 
   "the-blame": {
     id: "the-blame",
     type: "narrative",
-    title: "The pushback.",
+    title: "Not everyone on the wall agrees.",
     paragraphs: [],
     messages: [
       {
@@ -327,13 +352,10 @@ const story: Record<string, Scene> = {
         channel: true,
       },
     ],
-    afterword: [
-      "The wall is split. No side is highlighted as the answer.",
-    ],
-    choices: [{ label: "See what it feeds", next: "the-threat" }],
-    mood: "tension",
+    afterword: ["No side is pinned as the answer."],
+    choices: [{ label: "See where it leads", next: "the-threat" }],
+    mood: "digital",
   },
-
 
   "the-threat": {
     id: "the-threat",
@@ -346,7 +368,7 @@ const story: Record<string, Scene> = {
       meta: "Reply · Lagos",
       body: "Don’t complain if anything happens to you here.",
       audio: {
-        src: "/audio/vn02-reply.mp3",
+        src: audioUrl("vn02-reply.mp3"),
         language: "en",
         durationLabel: "0:12",
       },
@@ -424,23 +446,63 @@ const story: Record<string, Scene> = {
     id: "the-date-disappears",
     type: "narrative",
     title: "The tour poster is still pinned.",
-    paragraphs: ["Watch the date."],
+    paragraphs: [
+      "Watch the date.",
+      "In July — five months before December 22 — it vanished from the public itinerary.",
+    ],
     exhibit: {
       numeral: "22",
-      slots: ["LAGOS", "DECEMBER"],
+      slots: ["A*POP WORLD TOUR", "LAGOS — MISSING", "DECEMBER"],
     },
     evidence: [
       {
         id: "d1",
         claim:
-          "The Lagos stop subsequently disappeared from Tyla’s official tour itinerary amid boycott calls.",
-        status: "Official explanation not publicly established",
+          "The Lagos stop disappeared from Tyla’s official tour itinerary in July, amid boycott calls.",
+        status: "What we know",
+        tone: "documented",
+      },
+      {
+        id: "d2",
+        claim:
+          "Why it was removed — cancellation, postponement, or scheduling — was never publicly established.",
+        status: "What we don’t know",
         tone: "unsourced",
         context:
-          "Neither Tyla nor her management publicly explained the change at the time. The timing is part of the story; the cause was never stated.",
+          "Neither Tyla nor her management publicly explained the change at the time. The timing is part of the story; the cause was not stated.",
       },
     ],
-    choices: [{ label: "Follow the wall", next: "the-wall-splits" }],
+    choices: [{ label: "Follow the wall", next: "the-remarks" }],
+    mood: "digital",
+  },
+
+  "the-remarks": {
+    id: "the-remarks",
+    type: "narrative",
+    title: "August. She speaks.",
+    paragraphs: [],
+    messages: [
+      {
+        id: "r1",
+        sender: "WHAT SHE SAID",
+        meta: "SAMA32 · August",
+        body: "“I pray to see a unified Africa.”",
+        channel: true,
+      },
+      {
+        id: "r2",
+        sender: "WHAT SHE DIDN’T SAY",
+        meta: "The same speech",
+        body: "She did not directly address the Lagos controversy.",
+        channel: true,
+      },
+    ],
+    afterword: [
+      "The internet had already answered for her silence.",
+      "Now some read meaning into words that never mentioned Lagos at all.",
+      "Silence becomes motive. Words become something else.",
+    ],
+    choices: [{ label: "Read the other side", next: "the-wall-splits" }],
     mood: "digital",
   },
 
@@ -469,7 +531,7 @@ const story: Record<string, Scene> = {
         "“Don’t complain if something happens to you”",
       ],
     },
-    choices: [{ label: "Read the other side", next: "the-mirror" }],
+    choices: [{ label: "See the other feed", next: "the-mirror" }],
     mood: "digital",
   },
 
@@ -531,7 +593,39 @@ const story: Record<string, Scene> = {
       "The last arrow points back to the first word.",
       "Someone has to stop forwarding the cycle.",
     ],
-    choices: [{ label: "Break the cycle", next: "final-interaction" }],
+    choices: [{ label: "Break the cycle", next: "the-forward" }],
+    mood: "tension",
+  },
+
+  "the-forward": {
+    id: "the-forward",
+    type: "message",
+    title: "The threat is in your hands.",
+    paragraphs: [],
+    message: {
+      id: "f1",
+      sender: "@dontplayNG",
+      meta: "Reply · Lagos",
+      body: "Don’t complain if anything happens to you here.",
+    },
+    afterword: ["You did not write it. You are holding it."],
+    choices: [
+      {
+        label: "Forward it",
+        hint: "Show people what they are saying.",
+        next: "the-cycle",
+      },
+      {
+        label: "Ask where it came from",
+        hint: "Trace it before it moves.",
+        next: "final-interaction",
+      },
+      {
+        label: "Report it, then stop",
+        hint: "Do not carry it further.",
+        next: "final-interaction",
+      },
+    ],
     mood: "tension",
   },
 
@@ -539,25 +633,11 @@ const story: Record<string, Scene> = {
     id: "final-interaction",
     type: "narrative",
     title: "The original post, annotated.",
-    paragraphs: [
-      "Pin each word to read what it was being made to carry.",
-    ],
+    paragraphs: ["Pin each word to read what it was being made to carry."],
     wall: [
-      {
-        id: "g1",
-        label: "Nigerians",
-        note: "A national identity.",
-      },
-      {
-        id: "g2",
-        label: "South Africans",
-        note: "A national identity.",
-      },
-      {
-        id: "g3",
-        label: "Tyla",
-        note: "An individual person.",
-      },
+      { id: "g1", label: "Nigerians", note: "A national identity." },
+      { id: "g2", label: "South Africans", note: "A national identity." },
+      { id: "g3", label: "Tyla", note: "An individual person." },
       {
         id: "g4",
         label: "Xenophobia",
@@ -569,11 +649,7 @@ const story: Record<string, Scene> = {
         note:
           "A collective decision not to support a person, product or event as a form of protest.",
       },
-      {
-        id: "g6",
-        label: "Threat",
-        note: "Something different.",
-      },
+      { id: "g6", label: "Threat", note: "Something different." },
     ],
     afterword: ["The words were being collapsed into one another."],
     choices: [{ label: "Listen", next: "final-voice-note" }],
@@ -590,7 +666,7 @@ const story: Record<string, Scene> = {
       sender: "The wall",
       body: "Maybe the hardest part is that the anger wasn’t invented. People were genuinely hurt. People genuinely wanted somebody to say something. But somewhere between the first post and the hundredth forward, the person disappeared. Tyla became South Africa. South Africa became every South African. And a real grievance became permission to blame people who weren’t there. That is how a border enters a conversation. And that is how a conversation can become another border.",
       audio: {
-        src: "/audio/vn04-final.mp3",
+        src: audioUrl("vn04-final.mp3"),
         language: "en",
         durationLabel: "0:45",
       },
@@ -604,6 +680,9 @@ const story: Record<string, Scene> = {
     type: "ending",
     title: "A real grievance. A real person. A digital crowd. A choice.",
     paragraphs: [
+      "December 22 hasn’t happened.",
+      "The date disappeared first.",
+      "What followed was the conversation around it.",
       "You cannot undo what happened by pretending it didn’t.",
       "But you can choose what happens next.",
     ],
@@ -612,6 +691,8 @@ const story: Record<string, Scene> = {
       "AFAX-P",
       "Digital Storytelling for Peacebuilding",
       "Social-media posts shown in this experience are reconstructed composites inspired by public discourse.",
+      "#ImiliInstitute #AfricaAgainstXenophobia #UNESCO #Africa",
+      "Context drawn from reporting by Premium Times, The Guardian Nigeria and The Rio Times, July 2026.",
       "The Show That Didn’t Happen",
       "How a real grievance became a cross-border argument",
     ],
@@ -629,4 +710,3 @@ const story: Record<string, Scene> = {
 export function getScene(id: string): Scene {
   return story[id] ?? story[START_SCENE_ID];
 }
-

@@ -1196,3 +1196,47 @@ html[data-flip="in"] .story__page {
     transition: none;
   }
 }
+/* Taped-on strip that appears after scrolling. Hidden state is unfocusable. */
+.wall-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.55rem 1.1rem;
+  background: var(--paper-note);
+  border-bottom: 1px solid color-mix(in srgb, var(--text-muted) 35%, transparent);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 0.18);
+  transform: translateY(-110%);
+  visibility: hidden;
+  transition:
+    transform 280ms ease,
+    box-shadow 280ms ease,
+    visibility 0s linear 280ms;
+}
+
+.wall-nav--visible {
+  transform: translateY(0.3deg) translateY(0);
+  visibility: visible;
+  transition: transform 280ms ease, box-shadow 280ms ease;
+}
+
+.wall-nav__label {
+  font-family: var(--font-display);
+  font-size: var(--label-size);
+  font-weight: 700;
+  letter-spacing: var(--label-spacing);
+  text-transform: uppercase;
+  color: var(--masthead-text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wall-nav,
+  .wall-nav--visible {
+    transition: none;
+  }
+}
