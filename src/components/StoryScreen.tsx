@@ -1,8 +1,10 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type AnimationEvent } from "react";
 import type { Scene } from "../data/story";
 import ChoiceButton from "./ChoiceButton";
 import MessageBubble from "./MessageBubble";
 import MessageWall from "./MessageWall";
+import TypingCue from "./TypingCue";
+import { playMessagePing } from "../audio";
 
 interface StoryScreenProps {
   scene: Scene;
@@ -26,6 +28,14 @@ export default function StoryScreen({ scene, onChoice }: StoryScreenProps) {
 
   const heading = scene.title ?? "[UNTITLED SCENE]";
 
+  // Ping as each message of a cascade starts arriving (skipped under reduced motion).
+  const handleAnimationStart = (event: AnimationEvent<HTMLElement>) => {
+    if (event.animationName !== "bubble-in") return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    playMessagePing();
+  };
+
+
   return (
     <main className="story" id="story">
       <div className={`story__page story__page--mood-${scene.mood ?? "digital"}`}>
@@ -35,6 +45,7 @@ export default function StoryScreen({ scene, onChoice }: StoryScreenProps) {
           className={`story__scene story__scene--${scene.type}`}
           tabIndex={-1}
           aria-labelledby="scene-heading"
+          onAnimationStart={handleAnimationStart}
         >
           <h1 id="scene-heading" className="story__title">
             {heading}
@@ -55,6 +66,9 @@ export default function StoryScreen({ scene, onChoice }: StoryScreenProps) {
               {scene.messages.map((message) => (
                 <MessageBubble key={message.id} message={message} />
               ))}
+              {scene.mood !== "tension" && scene.messages.length > 1 ? (
+                <TypingCue count={scene.messages.length} />
+              ) : null}
             </div>
           ) : null}
 

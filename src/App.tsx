@@ -1,11 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import StoryScreen from "./components/StoryScreen";
 import ThemeToggle from "./components/ThemeToggle";
+import { initAudioOnFirstGesture } from "./audio";
 import { START_SCENE_ID, getScene } from "./data/story";
 import type { Scene } from "./data/story";
 
 export default function App() {
   const [scene, setScene] = useState<Scene>(() => getScene(START_SCENE_ID));
+
+  // Unlock the message-ping sound on the reader's first interaction.
+  useEffect(() => initAudioOnFirstGesture(), []);
 
   return (
     <div className="app">

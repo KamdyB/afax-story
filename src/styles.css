@@ -1203,3 +1203,43 @@ html[data-flip="in"] .story__page {
   right: 0.9rem;
   z-index: 70;
 }
+/* "More is coming" cue: pulses while the cascade arrives, then fades. */
+.story__cue {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.15rem 0.1rem;
+  animation:
+    cue-pulse 1.4s ease-in-out infinite,
+    cue-out 500ms var(--cue-end, 12s) forwards;
+}
+
+.story__cue-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--text-muted);
+}
+
+@keyframes cue-pulse {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes cue-out {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .story__cue {
+    display: none;
+  }
+}
