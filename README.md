@@ -126,8 +126,6 @@ Instead of conventional scene cards, the story is presented as a physical/digita
 * annotations
 * traces of previous conversations
 
-The wall changes because **the viewer's understanding changes**.
-
 ---
 
 ## 🎙 VOICE NOTES
