@@ -18,8 +18,12 @@ function createAudioContext(): AudioContext | null {
 /** Unlocks audio on the reader's first interaction. Returns the cleanup. */
 export function initAudioOnFirstGesture(): () => void {
   const unlock = () => {
-    context ??= createAudioContext();
-    void context.resume();
+    if (context === null) {
+      context = createAudioContext();
+    }
+    if (context !== null) {
+      void context.resume();
+    }
   };
   window.addEventListener("pointerdown", unlock, { once: true });
   window.addEventListener("keydown", unlock, { once: true });
