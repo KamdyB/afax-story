@@ -144,3 +144,49 @@ export function playWallWipe(): void {
   noise.start(now);
   noise.stop(now + 0.5);
 }
+/** A distinct small tone per annotated word on the final wall. */
+type PinTone = { type: OscillatorType; freqs: readonly number[]; filter: number };
+
+const PIN_TONES = {
+  g1: { type: "sine", freqs: [330, 392], filter: 1800 }, // Nigerians — two notes, one people
+  g2: { type: "sine", freqs: [392, 494], filter: 1800 }, // South Africans — answering dyad
+  g3: { type: "sine", freqs: [880], filter: 2200 }, // Tyla — a single clear person
+  g4: { type: "triangle", freqs: [220, 233], filter: 1200 }, // Xenophobia — detuned, uneasy
+  g5: { type: "sine", freqs: [494], filter: 1800 }, // Boycott — a decision, spoken once
+  g6: { type: "sawtooth", freqs: [147], filter: 700 }, // Threat — low and dark
+} as const satisfies Record<string, PinTone>;
+
+function getPinTone(id: string): PinTone {
+  return id in PIN_TONES
+    ? PIN_TONES[id as keyof typeof PIN_TONES]
+    : PIN_TONES.g3;
+}
+
+/** The pinned word sounds itself when the reader opens it. */
+export function playPinTone(id: string): void {
+  const audio = context;
+  if (audio === null || audio.state !== "running") return;
+
+  const tone = getPinTone(id);
+  const now = audio.currentTime;
+  const filter = audio.createBiquadFilter();
+  const gain = audio.createGain();
+
+  filter.type = "lowpass";
+  filter.frequency.value = tone.filter;
+  gain.gain.setValueAtTime(0.0001, now);
+  gain.gain.linearRampToValueAtTime(0.04, now + 0.04);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.55);
+
+  filter.connect(gain);
+  connectToOutput(gain);
+
+  tone.freqs.forEach((frequency) => {
+    const oscillator = audio.createOscillator();
+    oscillator.type = tone.type;
+    oscillator.frequency.setValueAtTime(frequency, now);
+    oscillator.connect(filter);
+    oscillator.start(now);
+    oscillator.stop(now + 0.6);
+  });
+}
