@@ -1,14 +1,21 @@
 import type { CSSProperties } from "react";
 
 interface TypingCueProps {
-  /** Number of messages in the cascade — sets when the cue fades out. */
+  /** Number of messages in the cascade. */
   count: number;
 }
 
-/** Typing dots that hold while more messages are on their way, then fade. */
+const MESSAGE_INTERVAL_MS = 3000;
+const BUBBLE_TAIL_MS = 450;
+
+/** Three dots that travel as a small wave while the message cascade continues. */
 export default function TypingCue({ count }: TypingCueProps) {
-  // Fades just after the last message lands: 3s cadence + bubble-in tail.
-  const style = { "--cue-end": `${(count - 1) * 3 + 5.4}s` } as CSSProperties;
+  const lastMessageStart = Math.max(0, count - 1) * MESSAGE_INTERVAL_MS;
+  const cueEnd = lastMessageStart + BUBBLE_TAIL_MS;
+
+  const style = {
+    "--cue-end": `${cueEnd}ms`,
+  } as CSSProperties;
 
   return (
     <p className="story__cue" style={style} aria-hidden="true">

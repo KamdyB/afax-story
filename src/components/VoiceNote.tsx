@@ -6,96 +6,59 @@ interface VoiceNoteProps {
   audio: StoryAudio;
 }
 
-/** Player availability: checking until the recording's presence is confirmed. */
-type AudioStatus = "checking" | "available" | "unavailable";
+const EMPTY_TIME = "0:00";
 
-/** Seconds → m:ss. Guards NaN / Infinity / negative values. */
 function formatTime(seconds: number): string {
-  if (!Number.isFinite(seconds) || seconds < 0) {
-    return "0:00";
-  }
-  const whole = Math.floor(seconds);
-  return `${Math.floor(whole / 60)}:${String(whole % 60).padStart(2, "0")}`;
+  if (!Number.isFinite(seconds) || seconds < 0) return EMPTY_TIME;
+
+  const totalSeconds = Math.floor(seconds);
+  const minutes = Math.floor(totalSeconds / 60);
+  const remainder = totalSeconds % 60;
+
+  return `${minutes}:${String(remainder).padStart(2, "0")}`;
 }
 
-/**
- * Real voice note on the browser's native HTMLAudioElement. No audio library,
- * no autoplay. Availability is verified up front so a missing recording shows
- * as a designed placeholder instead of a button that fails on click.
- */
 export default function VoiceNote({ audio }: VoiceNoteProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [status, setStatus] = useState<AudioStatus>("checking");
-  const unavailable = status === "unavailable";
+  const [currentTime, setCurrentTime] = useState(0);
+  const [hasError, setHasError] = useState(false);
 
-  // Verify the recording exists before offering playback. Dev servers fall
-  // back to index.html for missing paths with HTTP 200, so both response
-  // status and content type must agree it is audio. If HEAD is blocked by
-  // the host, the native error/playback events below decide instead.
   useEffect(() => {
-    let cancelled = false;
-    fetch(audio.src, { method: "HEAD" })
-      .then((response) => {
-        if (cancelled) return;
-        const type = response.headers.get("content-type") ?? "";
-        setStatus(
-          response.ok && type.startsWith("audio") ? "available" : "unavailable",
-        );
-      })
-      .catch(() => {
-        if (!cancelled) setStatus("available"); // host ignores HEAD; trust <audio>
-      });
-    return () => {
-      cancelled = true;
-    };
+    const element = audioRef.current;
+
+    setIsPlaying(false);
+    setDuration(0);
+    setCurrentTime(0);
+    setHasError(false);
+
+    if (!element) return;
+
+    element.pause();
+    element.currentTime = 0;
+    element.load();
   }, [audio.src]);
 
-  // Stop playback if the reader turns the page mid-listen.
-  useEffect(() => {
+  const togglePlayback = async () => {
     const element = audioRef.current;
-    return () => {
-      element?.pause();
-    };
-  }, []);
+    if (!element || hasError) return;
 
-  const handleToggle = () => {
-    const element = audioRef.current;
-    if (element === null || unavailable) return;
     if (element.paused) {
-      // play() can reject (missing source, browser policy) — degrade honestly.
-      element.play().catch(() => setStatus("unavailable"));
-    } else {
-      element.pause();
+      try {
+        await element.play();
+      } catch {
+        setHasError(true);
+        setIsPlaying(false);
+      }
+      return;
     }
-  };
 
-  const handleTimeUpdate = () => {
-    const element = audioRef.current;
-    if (element !== null) setCurrentTime(element.currentTime);
+    element.pause();
   };
-
-  const handleLoadedMetadata = () => {
-    const element = audioRef.current;
-    if (element !== null && Number.isFinite(element.duration)) {
-      setDuration(element.duration);
-    }
-  };
-
-  const handleEnded = () => {
-    setIsPlaying(false);
-    setCurrentTime(0);
-  };
-
-  const handleError = () => setStatus("unavailable");
 
   const progress =
     duration > 0 ? Math.min(100, Math.max(0, (currentTime / duration) * 100)) : 0;
-  const durationLabel =
-    duration > 0 ? formatTime(duration) : (audio.durationLabel ?? "–:––");
-  const elapsedLabel = formatTime(currentTime);
 
   return (
     <div className="voice-note">
@@ -103,55 +66,66 @@ export default function VoiceNote({ audio }: VoiceNoteProps) {
         ref={audioRef}
         src={audio.src}
         preload="metadata"
+        onLoadedMetadata={(event) => {
+          const nextDuration = event.currentTarget.duration;
+          setDuration(Number.isFinite(nextDuration) ? nextDuration : 0);
+        }}
+        onDurationChange={(event) => {
+          const nextDuration = event.currentTarget.duration;
+          setDuration(Number.isFinite(nextDuration) ? nextDuration : 0);
+        }}
+        onTimeUpdate={(event) => {
+          setCurrentTime(event.currentTarget.currentTime);
+        }}
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
-        onTimeUpdate={handleTimeUpdate}
-        onLoadedMetadata={handleLoadedMetadata}
-        onEnded={handleEnded}
-        onError={handleError}
+        onEnded={() => {
+          setIsPlaying(false);
+          setCurrentTime(0);
+        }}
+        onError={() => {
+          setHasError(true);
+          setIsPlaying(false);
+        }}
       />
 
       <div className="voice-note__controls">
         <button
           type="button"
           className={`voice-note__toggle${isPlaying ? " voice-note__toggle--playing" : ""}`}
-          aria-label={
-            unavailable
-              ? "Voice note unavailable — recording not added yet"
-              : isPlaying
-                ? "Pause voice note"
-                : "Play voice note"
-          }
-          disabled={status !== "available"}
-          onClick={handleToggle}
+          onClick={togglePlayback}
+          disabled={hasError}
+          aria-label={hasError ? "Voice note unavailable" : isPlaying ? "Pause voice note" : "Play voice note"}
+          title={hasError ? "Voice note unavailable" : isPlaying ? "Pause voice note" : "Play voice note"}
         >
           {isPlaying ? (
-            <Pause size={14} strokeWidth={2.25} aria-hidden="true" />
+            <Pause size={14} strokeWidth={2.4} aria-hidden="true" />
           ) : (
-            <Play size={14} strokeWidth={2.25} aria-hidden="true" />
+            <Play size={14} strokeWidth={2.4} aria-hidden="true" />
           )}
         </button>
 
         <div
-          className={`voice-note__track${unavailable ? " voice-note__track--unavailable" : ""}`}
+          className={`voice-note__track${hasError ? " voice-note__track--unavailable" : ""}`}
           role="progressbar"
           aria-label="Voice note progress"
           aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={Math.round(progress)}
-          aria-valuetext={`${elapsedLabel} of ${durationLabel}`}
+          aria-valuemax={duration || 0}
+          aria-valuenow={Math.min(currentTime, duration || 0)}
         >
-          <div className="voice-note__fill" style={{ width: `${progress}%` }} />
+          <span
+            className="voice-note__fill"
+            style={{ width: `${progress}%` }}
+            aria-hidden="true"
+          />
         </div>
 
-        <span className="voice-note__time">
-          {elapsedLabel} / {durationLabel}
+        <span className="voice-note__time" aria-live="off">
+          {hasError
+            ? "Unavailable"
+            : `${formatTime(currentTime)} / ${formatTime(duration)}`}
         </span>
       </div>
-
-      {unavailable ? (
-        <p className="voice-note__missing">Voice recording not added yet.</p>
-      ) : null}
     </div>
   );
 }

@@ -31,8 +31,6 @@ export interface StoryAudio {
   src: string;
   language?: StoryLanguage | undefined;
   transcript?: string | undefined;
-  /** Static fallback duration label shown before metadata loads. */
-  durationLabel?: string | undefined;
 }
 
 export interface StoryMessage {
@@ -135,7 +133,6 @@ const story: Record<string, Scene> = {
         audio: {
           src: audioUrl("vn01-context.mp3"),
           language: "en",
-          durationLabel: "0:18",
         },
       },
       {
@@ -260,6 +257,16 @@ const story: Record<string, Scene> = {
       numeral: "TYLA",
       slots: [],
     },
+    message: {
+      id: "s1",
+      sender: "The wall",
+      meta: "Voice note · The silence",
+      body: "",
+      audio: {
+        src: audioUrl("vn02-silence.mp3"),
+        language: "en",
+      },
+    },
     afterword: [
       "Public criticism focused partly on Tyla’s lack of a public response to xenophobic attacks affecting Nigerians and other African migrants in South Africa.",
       "The criticism was of the silence — not of anything she was shown to have done.",
@@ -368,9 +375,8 @@ const story: Record<string, Scene> = {
       meta: "Reply · Lagos",
       body: "Don’t complain if anything happens to you here.",
       audio: {
-        src: audioUrl("vn02-reply.mp3"),
+        src: audioUrl("vn03-threat.mp3"),
         language: "en",
-        durationLabel: "0:12",
       },
     },
     afterword: [
@@ -453,6 +459,16 @@ const story: Record<string, Scene> = {
     exhibit: {
       numeral: "22",
       slots: ["A*POP WORLD TOUR", "LAGOS — MISSING", "DECEMBER"],
+    },
+    message: {
+      id: "d3",
+      sender: "The wall",
+      meta: "Voice note · The date disappears",
+      body: "",
+      audio: {
+        src: audioUrl("vn04-date-disappears.mp3"),
+        language: "en",
+      },
     },
     evidence: [
       {
@@ -540,6 +556,16 @@ const story: Record<string, Scene> = {
     type: "narrative",
     title: "The wall flips.",
     paragraphs: [],
+    message: {
+      id: "m0",
+      sender: "The wall",
+      meta: "Voice note · The mirror",
+      body: "",
+      audio: {
+        src: audioUrl("vn05-mirror.mp3"),
+        language: "en",
+      },
+    },
     messages: [
       {
         id: "m1",
@@ -666,9 +692,8 @@ const story: Record<string, Scene> = {
       sender: "The wall",
       body: "Maybe the hardest part is that the anger wasn’t invented. People were genuinely hurt. People genuinely wanted somebody to say something. But somewhere between the first post and the hundredth forward, the person disappeared. Tyla became South Africa. South Africa became every South African. And a real grievance became permission to blame people who weren’t there. That is how a border enters a conversation. And that is how a conversation can become another border.",
       audio: {
-        src: audioUrl("vn04-final.mp3"),
+        src: audioUrl("vn06-final-reflection.mp3"),
         language: "en",
-        durationLabel: "0:45",
       },
     },
     choices: [{ label: "Return to the wall", next: "final-wall" }],
@@ -693,7 +718,7 @@ const story: Record<string, Scene> = {
       "Social-media posts shown in this experience are reconstructed composites inspired by public discourse.",
       "#ImiliInstitute #AfricaAgainstXenophobia #UNESCO #Africa",
       "Context drawn from reporting by Premium Times, The Guardian Nigeria and The Rio Times(July 2026), and coverage of her SAMA32 speech by BellaNaija and Pulse Ghana (August 2026).",
-      "The Show That Didn’t Happen",
+      "The Show That Disappeared",
       "How a real grievance became a cross-border argument",
     ],
     choices: [
