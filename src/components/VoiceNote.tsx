@@ -8,30 +8,6 @@ interface VoiceNoteProps {
 
 const EMPTY_TIME = "0:00";
 
-function resolveAudioSource(src: string): string {
-  /*
-   * Audio files live in /public/audio/.
-   *
-   * import.meta.env.BASE_URL is:
-   *   "/" locally
-   *   "/afax-story/" on GitHub Pages
-   *
-   * This prevents GitHub Pages from requesting /audio/file.mp3
-   * from the domain root instead of /afax-story/audio/file.mp3.
-   */
-  if (/^(https?:|data:|blob:)/i.test(src)) {
-    return src;
-  }
-
-  const base = import.meta.env.BASE_URL.endsWith("/")
-    ? import.meta.env.BASE_URL
-    : `${import.meta.env.BASE_URL}/`;
-
-  const cleanSrc = src.replace(/^\/+/, "");
-
-  return `${base}${cleanSrc}`;
-}
-
 function formatTime(seconds: number): string {
   if (!Number.isFinite(seconds) || seconds < 0) {
     return EMPTY_TIME;
