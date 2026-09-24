@@ -156,7 +156,9 @@ export default function StoryScreen({ scene, onChoice }: StoryScreenProps) {
           {renderedMessages ? (
             <div className="story__thread">
               {renderedMessages.map((message) => (
-                <MessageBubble key={message.id} message={message} />
+                <div key={message.id} className="story__thread-item">
+                  <MessageBubble message={message} />
+                </div>
               ))}
               {scene.mood !== "tension" &&
               scene.messages &&
