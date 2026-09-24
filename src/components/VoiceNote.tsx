@@ -28,7 +28,7 @@ export default function VoiceNote({ audio }: VoiceNoteProps) {
   const [currentTime, setCurrentTime] = useState(0);
   const [hasError, setHasError] = useState(false);
 
-  const source = resolveAudioSource(audio.src);
+  const source = audio.src;
 
   useEffect(() => {
     const element = audioRef.current;
