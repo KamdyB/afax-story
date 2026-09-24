@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type AnimationEvent } from "react";
+import { useEffect, useRef, type AnimationEvent, type CSSProperties } from "react";
 import type { Scene } from "../data/story";
 import ChoiceButton from "./ChoiceButton";
 import MessageBubble from "./MessageBubble";
@@ -8,15 +8,11 @@ import { playMessagePing, playWallWipe } from "../audio";
 
 interface StoryScreenProps {
   scene: Scene;
-  /** Called with the `next` scene ID of the chosen option. */
   onChoice: (nextSceneId: string) => void;
 }
 
-/** Delay between narration words, in milliseconds. */
 const WORD_DELAY_MS = 45;
-
-/** Delay between present-day digital messages, in milliseconds. */
-const MESSAGE_DELAY_MS = 3000;
+const MESSAGE_INTERVAL_MS = 3000;
 
 interface WordEntry {
   word: string;
@@ -28,12 +24,13 @@ interface NarrationBlock {
   words: WordEntry[];
 }
 
-/** Splits narration into word spans; delays run continuously across paragraphs. */
 function buildNarration(paragraphs: string[]): NarrationBlock[] {
   const blocks: NarrationBlock[] = [];
   let wordOffset = 0;
+
   paragraphs.forEach((paragraph, index) => {
     const words = paragraph.split(/\s+/).filter(Boolean);
+
     blocks.push({
       key: index,
       words: words.map((word, wordIndex) => ({
@@ -41,86 +38,52 @@ function buildNarration(paragraphs: string[]): NarrationBlock[] {
         delay: (wordOffset + wordIndex) * WORD_DELAY_MS,
       })),
     });
+
     wordOffset += words.length;
   });
+
   return blocks;
 }
 
-/** Fixed render order: material → narration → choices. No chapter labels. */
 export default function StoryScreen({ scene, onChoice }: StoryScreenProps) {
   const articleRef = useRef<HTMLElement | null>(null);
   const lastSceneIdRef = useRef<string | null>(null);
   const narration = buildNarration(scene.paragraphs);
-  const digitalMessages = scene.mood === "digital" ? scene.messages : undefined;
-  const [messageReveal, setMessageReveal] = useState(() => ({
-    sceneId: scene.id,
-    count: digitalMessages ? 0 : scene.messages?.length ?? 0,
-  }));
 
-  const visibleMessageCount =
-    messageReveal.sceneId === scene.id
-      ? messageReveal.count
-      : digitalMessages
-        ? 0
-        : scene.messages?.length ?? 0;
-
-  // Reveal present-day messages one at a time so the thread physically grows
-  // as each message lands instead of reserving the full thread height upfront.
-  useEffect(() => {
-    if (!digitalMessages?.length) {
-      setMessageReveal({ sceneId: scene.id, count: scene.messages?.length ?? 0 });
-      return;
-    }
-
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setMessageReveal({ sceneId: scene.id, count: digitalMessages.length });
-      return;
-    }
-
-    setMessageReveal({ sceneId: scene.id, count: 1 });
-
-    const timers = digitalMessages.slice(1).map((_, index) =>
-      window.setTimeout(() => {
-        setMessageReveal({ sceneId: scene.id, count: index + 2 });
-      }, (index + 1) * MESSAGE_DELAY_MS),
-    );
-
-    return () => {
-      timers.forEach((timer) => window.clearTimeout(timer));
-    };
-  }, [scene.id, digitalMessages]);
-
-  // On scene change (not first render): paper-wipe, scroll to top, move focus.
   useEffect(() => {
     const previousSceneId = lastSceneIdRef.current;
+
     if (previousSceneId === scene.id) return;
+
     lastSceneIdRef.current = scene.id;
+
     if (
       previousSceneId !== null &&
       !window.matchMedia("(prefers-reduced-motion: reduce)").matches
     ) {
       playWallWipe();
     }
+
     window.scrollTo({ top: 0, behavior: "auto" });
     articleRef.current?.focus({ preventScroll: true });
   }, [scene.id]);
 
-  const heading = scene.title ?? "[UNTITLED SCENE]";
-
-  // Ping as each newly rendered message starts arriving (skipped under reduced motion).
   const handleAnimationStart = (event: AnimationEvent<HTMLElement>) => {
     if (event.animationName !== "bubble-in") return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
     playMessagePing();
   };
 
-  const renderedMessages = scene.messages
-    ? scene.messages.slice(0, visibleMessageCount)
-    : undefined;
+  const heading = scene.title ?? "[UNTITLED SCENE]";
+  const hasThread = Boolean(scene.messages?.length);
+  const isDigitalThread = scene.mood === "digital";
 
   return (
     <main className="story" id="story">
-      <div className={`story__page story__page--mood-${scene.mood ?? "digital"}`}>
+      <div
+        className={`story__page story__page--mood-${scene.mood ?? "digital"}`}
+      >
         <article
           key={scene.id}
           ref={articleRef}
@@ -151,18 +114,36 @@ export default function StoryScreen({ scene, onChoice }: StoryScreenProps) {
             </div>
           ) : null}
 
-          {scene.message ? <MessageBubble message={scene.message} /> : null}
+          {scene.message ? (
+            <MessageBubble message={scene.message} />
+          ) : null}
 
-          {renderedMessages ? (
+          {hasThread ? (
             <div className="story__thread">
-              {renderedMessages.map((message) => (
-                <MessageBubble key={message.id} message={message} />
-              ))}
-              {scene.mood !== "tension" &&
-              scene.messages &&
-              scene.messages.length > 1 &&
-              visibleMessageCount < scene.messages.length ? (
-                <TypingCue count={scene.messages.length} />
+              {scene.messages!.map((message, index) => {
+                const arrivalDelay =
+                  isDigitalThread ? index * MESSAGE_INTERVAL_MS : index * 120;
+
+                const style = {
+                  "--message-delay": `${arrivalDelay}ms`,
+                } as CSSProperties;
+
+                return (
+                  <div
+                    key={message.id}
+                    className="story__thread-item"
+                    style={style}
+                  >
+                    <MessageBubble message={message} />
+                  </div>
+                );
+              })}
+
+              {isDigitalThread && scene.messages!.length > 1 ? (
+                <TypingCue
+                  count={scene.messages!.length}
+                  intervalMs={MESSAGE_INTERVAL_MS}
+                />
               ) : null}
             </div>
           ) : null}
@@ -177,6 +158,7 @@ export default function StoryScreen({ scene, onChoice }: StoryScreenProps) {
                   <p className="evidence-card__label">Claim</p>
                   <h2 className="evidence-card__claim">{item.claim}</h2>
                   <p className="evidence-card__status">{item.status}</p>
+
                   {item.context ? (
                     <p className="evidence-card__context">{item.context}</p>
                   ) : null}
@@ -190,6 +172,7 @@ export default function StoryScreen({ scene, onChoice }: StoryScreenProps) {
               <p className="exhibit__numeral" aria-hidden="true">
                 {scene.exhibit.numeral}
               </p>
+
               {scene.exhibit.slots.length > 0 ? (
                 <ul className="exhibit__slots">
                   {scene.exhibit.slots.map((slot, index) => (
@@ -208,15 +191,22 @@ export default function StoryScreen({ scene, onChoice }: StoryScreenProps) {
               aria-label={`${scene.compare.leftTitle} versus ${scene.compare.rightTitle}`}
             >
               <div className="compare__column compare__column--left">
-                <h2 className="compare__heading">{scene.compare.leftTitle}</h2>
+                <h2 className="compare__heading">
+                  {scene.compare.leftTitle}
+                </h2>
+
                 <ul className="compare__list">
                   {scene.compare.left.map((item, index) => (
                     <li key={index}>{item}</li>
                   ))}
                 </ul>
               </div>
+
               <div className="compare__column compare__column--right">
-                <h2 className="compare__heading">{scene.compare.rightTitle}</h2>
+                <h2 className="compare__heading">
+                  {scene.compare.rightTitle}
+                </h2>
+
                 <ul className="compare__list">
                   {scene.compare.right.map((item, index) => (
                     <li key={index}>{item}</li>
@@ -227,7 +217,10 @@ export default function StoryScreen({ scene, onChoice }: StoryScreenProps) {
           ) : null}
 
           {scene.pairs ? (
-            <section className="pairs" aria-label="Original claims and their context">
+            <section
+              className="pairs"
+              aria-label="Original claims and their context"
+            >
               {scene.pairs.map((pair) => (
                 <div key={pair.id} className="pair">
                   <p className="pair__original">{pair.original}</p>

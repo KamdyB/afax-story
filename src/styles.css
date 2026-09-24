@@ -1006,30 +1006,99 @@ button {
   }
 }
 
-/* ---- 18. Cadence: present-day wall material arrives one message at a time --------------------------- */
-/* Digital threads use a deliberate 3-second arrival rhythm. */
-.story__page--mood-digital .story__thread .message-bubble:nth-child(1) { animation-delay: 0s; }
-.story__page--mood-digital .story__thread .message-bubble:nth-child(2) { animation-delay: 3s; }
-.story__page--mood-digital .story__thread .message-bubble:nth-child(3) { animation-delay: 6s; }
-.story__page--mood-digital .story__thread .message-bubble:nth-child(4) { animation-delay: 9s; }
-.story__page--mood-digital .story__thread .message-bubble:nth-child(5) { animation-delay: 12s; }
-.story__page--mood-digital .story__thread .message-bubble:nth-child(6) { animation-delay: 15s; }
-.story__page--mood-digital .story__thread .message-bubble:nth-child(7) { animation-delay: 18s; }
-.story__page--mood-digital .story__thread .message-bubble:nth-child(n + 8) { animation-delay: 21s; }
+/* ---- 18. Cadence: React owns arrival timing ---------------------------------------------- */
 
-/* Confrontation threads: the dialogue sweeps in almost at once */
-.story__page--mood-tension .story__thread .message-bubble:nth-child(1) { animation-delay: 0s; }
-.story__page--mood-tension .story__thread .message-bubble:nth-child(2) { animation-delay: 120ms; }
-.story__page--mood-tension .story__thread .message-bubble:nth-child(3) { animation-delay: 240ms; }
-.story__page--mood-tension .story__thread .message-bubble:nth-child(4) { animation-delay: 360ms; }
-.story__page--mood-tension .story__thread .message-bubble:nth-child(5) { animation-delay: 480ms; }
-.story__page--mood-tension .story__thread .message-bubble:nth-child(6) { animation-delay: 600ms; }
-.story__page--mood-tension .story__thread .message-bubble:nth-child(n + 7) { animation-delay: 720ms; }
+/*
+ * StoryScreen supplies --message-delay.
+ * CSS is responsible only for animating the bubble at that supplied time.
+ * This keeps timing in one place instead of duplicating the schedule here.
+ */
 
-.story__choices > .choice-button:nth-of-type(1) { animation-delay: 0ms; }
-.story__choices > .choice-button:nth-of-type(2) { animation-delay: 70ms; }
-.story__choices > .choice-button:nth-of-type(3) { animation-delay: 140ms; }
-.story__choices > .choice-button:nth-of-type(n + 4) { animation-delay: 210ms; }
+.story__thread-item {
+  animation: bubble-in 520ms var(--ease-settle) var(--message-delay, 0ms) both;
+}
+
+.story__thread-item .message-bubble {
+  animation: none;
+}
+
+/* Confrontation threads still arrive rapidly, but through the same mechanism. */
+.story__page--mood-tension .story__thread-item {
+  --message-delay: 0ms;
+}
+
+.story__page--mood-tension .story__thread-item:nth-child(2) {
+  --message-delay: 120ms;
+}
+
+.story__page--mood-tension .story__thread-item:nth-child(3) {
+  --message-delay: 240ms;
+}
+
+.story__page--mood-tension .story__thread-item:nth-child(4) {
+  --message-delay: 360ms;
+}
+
+.story__page--mood-tension .story__thread-item:nth-child(5) {
+  --message-delay: 480ms;
+}
+
+.story__page--mood-tension .story__thread-item:nth-child(6) {
+  --message-delay: 600ms;
+}
+
+.story__page--mood-tension .story__thread-item:nth-child(n + 7) {
+  --message-delay: 720ms;
+}
+
+
+/* ---- 19. Typing cue ---------------------------------------------------------------------- */
+
+.story__cue {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 14px;
+  padding: 0.4rem 0.15rem 0.1rem;
+  animation: cue-out 500ms var(--cue-end, 3000ms) forwards;
+}
+
+.story__cue-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--text-muted);
+  animation: typing-wave 900ms ease-in-out infinite;
+}
+
+.story__cue-dot:nth-child(2) {
+  animation-delay: 120ms;
+}
+
+.story__cue-dot:nth-child(3) {
+  animation-delay: 240ms;
+}
+
+@keyframes typing-wave {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0) scale(0.92);
+    opacity: 0.55;
+  }
+
+  30% {
+    transform: translateY(-4px) scale(1.12);
+    opacity: 1;
+  }
+}
+
+@keyframes cue-out {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
 
 /* ---- 19. Theme switch: the page dries, yellows and crumbles away, top to bottom --------------------------------------- */
 html[data-flip="out"] .story__page {
