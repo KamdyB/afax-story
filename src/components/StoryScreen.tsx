@@ -1,4 +1,4 @@
-import { useEffect, useRef, type AnimationEvent } from "react";
+import { useEffect, useRef, useState, type AnimationEvent } from "react";
 import type { Scene } from "../data/story";
 import ChoiceButton from "./ChoiceButton";
 import MessageBubble from "./MessageBubble";
@@ -14,6 +14,9 @@ interface StoryScreenProps {
 
 /** Delay between narration words, in milliseconds. */
 const WORD_DELAY_MS = 45;
+
+/** Delay between present-day digital messages, in milliseconds. */
+const MESSAGE_DELAY_MS = 3000;
 
 interface WordEntry {
   word: string;
@@ -48,6 +51,44 @@ export default function StoryScreen({ scene, onChoice }: StoryScreenProps) {
   const articleRef = useRef<HTMLElement | null>(null);
   const lastSceneIdRef = useRef<string | null>(null);
   const narration = buildNarration(scene.paragraphs);
+  const digitalMessages = scene.mood === "digital" ? scene.messages : undefined;
+  const [messageReveal, setMessageReveal] = useState(() => ({
+    sceneId: scene.id,
+    count: digitalMessages ? 0 : scene.messages?.length ?? 0,
+  }));
+
+  const visibleMessageCount =
+    messageReveal.sceneId === scene.id
+      ? messageReveal.count
+      : digitalMessages
+        ? 0
+        : scene.messages?.length ?? 0;
+
+  // Reveal present-day messages one at a time so the thread physically grows
+  // as each message lands instead of reserving the full thread height upfront.
+  useEffect(() => {
+    if (!digitalMessages?.length) {
+      setMessageReveal({ sceneId: scene.id, count: scene.messages?.length ?? 0 });
+      return;
+    }
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setMessageReveal({ sceneId: scene.id, count: digitalMessages.length });
+      return;
+    }
+
+    setMessageReveal({ sceneId: scene.id, count: 1 });
+
+    const timers = digitalMessages.slice(1).map((_, index) =>
+      window.setTimeout(() => {
+        setMessageReveal({ sceneId: scene.id, count: index + 2 });
+      }, (index + 1) * MESSAGE_DELAY_MS),
+    );
+
+    return () => {
+      timers.forEach((timer) => window.clearTimeout(timer));
+    };
+  }, [scene.id, digitalMessages]);
 
   // On scene change (not first render): paper-wipe, scroll to top, move focus.
   useEffect(() => {
@@ -66,12 +107,16 @@ export default function StoryScreen({ scene, onChoice }: StoryScreenProps) {
 
   const heading = scene.title ?? "[UNTITLED SCENE]";
 
-  // Ping as each message of a cascade starts arriving (skipped under reduced motion).
+  // Ping as each newly rendered message starts arriving (skipped under reduced motion).
   const handleAnimationStart = (event: AnimationEvent<HTMLElement>) => {
     if (event.animationName !== "bubble-in") return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     playMessagePing();
   };
+
+  const renderedMessages = scene.messages
+    ? scene.messages.slice(0, visibleMessageCount)
+    : undefined;
 
   return (
     <main className="story" id="story">
@@ -108,12 +153,15 @@ export default function StoryScreen({ scene, onChoice }: StoryScreenProps) {
 
           {scene.message ? <MessageBubble message={scene.message} /> : null}
 
-          {scene.messages ? (
+          {renderedMessages ? (
             <div className="story__thread">
-              {scene.messages.map((message) => (
+              {renderedMessages.map((message) => (
                 <MessageBubble key={message.id} message={message} />
               ))}
-              {scene.mood !== "tension" && scene.messages.length > 1 ? (
+              {scene.mood !== "tension" &&
+              scene.messages &&
+              scene.messages.length > 1 &&
+              visibleMessageCount < scene.messages.length ? (
                 <TypingCue count={scene.messages.length} />
               ) : null}
             </div>
