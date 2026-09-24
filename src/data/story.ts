@@ -131,7 +131,7 @@ const story: Record<string, Scene> = {
         body: "Renewed xenophobic attacks against Nigerians and other African migrants reported in South Africa.",
         channel: true,
         audio: {
-          src: audioUrl("vn01-context.mp3"),
+          src: audioUrl("vn01-context.mp3.mp3"),
           language: "en",
         },
       },
@@ -263,7 +263,7 @@ const story: Record<string, Scene> = {
       meta: "Voice note · The silence",
       body: "",
       audio: {
-        src: audioUrl("vn02-silence.mp3"),
+        src: audioUrl("vn02-silence.mp3.mp3"),
         language: "en",
       },
     },
@@ -375,7 +375,7 @@ const story: Record<string, Scene> = {
       meta: "Reply · Lagos",
       body: "Don’t complain if anything happens to you here.",
       audio: {
-        src: audioUrl("vn03-threat.mp3"),
+        src: audioUrl("vn03-threat.mp3.mp3"),
         language: "en",
       },
     },
@@ -466,7 +466,7 @@ const story: Record<string, Scene> = {
       meta: "Voice note · The date disappears",
       body: "",
       audio: {
-        src: audioUrl("vn04-date-disappears.mp3"),
+        src: audioUrl("vn04-date-disappears.mp3.mp3"),
         language: "en",
       },
     },
@@ -562,7 +562,7 @@ const story: Record<string, Scene> = {
       meta: "Voice note · The mirror",
       body: "",
       audio: {
-        src: audioUrl("vn05-mirror.mp3"),
+        src: audioUrl("vn05-mirror.mp3.mp3"),
         language: "en",
       },
     },
@@ -692,7 +692,7 @@ const story: Record<string, Scene> = {
       sender: "The wall",
       body: "Maybe the hardest part is that the anger wasn’t invented. People were genuinely hurt. People genuinely wanted somebody to say something. But somewhere between the first post and the hundredth forward, the person disappeared. Tyla became South Africa. South Africa became every South African. And a real grievance became permission to blame people who weren’t there. That is how a border enters a conversation. And that is how a conversation can become another border.",
       audio: {
-        src: audioUrl("vn06-final-reflection.mp3"),
+        src: audioUrl("vn06-final-reflection.mp3.mp3"),
         language: "en",
       },
     },
