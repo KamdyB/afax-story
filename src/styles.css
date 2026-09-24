@@ -1,100 +1,170 @@
 /* ==========================================================================
    AFAX Story — THE SHOW THAT DIDN'T HAPPEN
+
    A living wall: oxblood/mustard brick, plaster, pinned paper.
-   Light = day archive. Dark = the same wall at night, hues darker only.
-   Each section has one responsibility; themes differ by tokens alone.
+   Light = day archive.
+   Dark = the same wall at night, hues darker only.
+
+   Each section has one responsibility.
    ========================================================================== */
 
-/* ---- 1. Tokens: light (the archive at day) -------------------------------- */
+/* ---- 1. Tokens: light ---------------------------------------------------- */
+
 :root {
   color-scheme: light;
 
-  /* Environment: brick + plaster */
   --env-base: #5e2b20;
-  --mortar-tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='76' height='72'%3E%3Crect width='76' height='3' fill='%23857661'/%3E%3Crect y='36' width='76' height='3' fill='%23857661'/%3E%3Crect x='37' y='3' width='3' height='33' fill='%23857661'/%3E%3Crect y='39' width='3' height='33' fill='%23857661'/%3E%3C/svg%3E");
-  --wall-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23p)'/%3E%3C/svg%3E");
-  --wall-sheen: linear-gradient(160deg, rgb(255 255 255 / 0.1), transparent 42%);
-  --wall-wash:
-    radial-gradient(ellipse 240px 180px at 20% 12%, rgb(178 128 44 / 0.4), transparent 70%),
-    radial-gradient(ellipse 280px 220px at 82% 40%, rgb(88 26 18 / 0.45), transparent 70%),
-    radial-gradient(ellipse 240px 180px at 32% 74%, rgb(196 150 60 / 0.26), transparent 70%),
-    radial-gradient(ellipse 220px 160px at 70% 92%, rgb(52 18 12 / 0.45), transparent 70%);
-  --wall-vignette: radial-gradient(ellipse at 50% 38%, transparent 55%, rgb(20 8 5 / 0.32) 100%);
 
-  /* Pinned paper */
+  --mortar-tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='76' height='72'%3E%3Crect width='76' height='3' fill='%23857661'/%3E%3Crect y='36' width='76' height='3' fill='%23857661'/%3E%3Crect x='37' y='3' width='3' height='33' fill='%23857661'/%3E%3Crect y='39' width='3' height='33' fill='%23857661'/%3E%3C/svg%3E");
+
+  --wall-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23p)'/%3E%3C/svg%3E");
+
+  --wall-sheen: linear-gradient(
+    160deg,
+    rgb(255 255 255 / 0.1),
+    transparent 42%
+  );
+
+  --wall-wash:
+    radial-gradient(
+      ellipse 240px 180px at 20% 12%,
+      rgb(178 128 44 / 0.4),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 280px 220px at 82% 40%,
+      rgb(88 26 18 / 0.45),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 240px 180px at 32% 74%,
+      rgb(196 150 60 / 0.26),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 220px 160px at 70% 92%,
+      rgb(52 18 12 / 0.45),
+      transparent 70%
+    );
+
+  --wall-vignette:
+    radial-gradient(
+      ellipse at 50% 38%,
+      transparent 55%,
+      rgb(20 8 5 / 0.32) 100%
+    );
+
   --page-bg: #f2e8d5;
   --page-tension-bg: #e9d5bd;
   --paper-note: #f6efdd;
   --page-line: rgb(42 28 18 / 0.25);
   --grain-opacity: 0.07;
 
-  /* Ink */
   --text: #241a10;
   --text-muted: #6b5b48;
 
-  /* Accents */
   --accent: #7a3320;
   --accent-strong: #5e2b20;
   --accent-soft: rgb(122 51 32 / 0.12);
   --kicker: #8a5a1c;
   --warm-line: rgb(138 90 28 / 0.4);
 
-  /* Physical material */
   --stamp-shadow: 3px 3px 0 rgb(36 26 16 / 0.22);
-  --pin-shadow: 0 1px 2px rgb(0 0 0 / 0.22), 0 6px 14px -6px rgb(0 0 0 / 0.35);
+  --pin-shadow:
+    0 1px 2px rgb(0 0 0 / 0.22),
+    0 6px 14px -6px rgb(0 0 0 / 0.35);
+
   --tape-bg: rgb(222 208 172 / 0.85);
   --tape-edge: rgb(150 132 96 / 0.45);
+
   --button-lip: #4a1d10;
   --toggle-face: #b08d4a;
   --toggle-face-hi: rgb(255 255 255 / 0.28);
   --toggle-ink: #241a10;
 
-  /* Claim tones */
   --status-documented: #2f4d63;
   --status-supported: #3d5c3a;
   --status-unsourced: #8f2f16;
   --status-interpretation: #7a5a12;
   --status-oversimplification: #6e2436;
 
-  /* Type */
   --font-display: "IM Fell English", Georgia, serif;
   --font-body: "Courier Prime", "Courier New", monospace;
-  --font-ui: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-ui:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
+
   --label-size: 0.72rem;
   --label-spacing: 0.14em;
-  --display-shadow: 0.6px 0.4px 0 rgb(36 26 16 / 0.35), 0.9px 0 0 rgb(122 51 32 / 0.14);
+
+  --display-shadow:
+    0.6px 0.4px 0 rgb(36 26 16 / 0.35),
+    0.9px 0 0 rgb(122 51 32 / 0.14);
+
   --masthead-text: #ead9b6;
 
-
-  /* Shape + motion */
   --radius-page: 16px;
   --radius-card: 10px;
   --radius-bubble: 12px;
   --radius-stamp: 8px;
+
   --ease-calm: cubic-bezier(0.45, 0, 0.55, 1);
   --ease-settle: cubic-bezier(0.22, 0.8, 0.36, 1);
   --ease-tactile: cubic-bezier(0.22, 1.08, 0.36, 1);
 
-  /* Toggle icon states (theme differences stay inside tokens) */
   --sun-transform: translateY(0) rotate(0deg);
   --sun-opacity: 1;
   --moon-transform: translateY(130%) rotate(-40deg);
   --moon-opacity: 0;
 }
 
-/* ---- 2. Tokens: dark (the same wall at night — hues darker, not different) -- */
+/* ---- 2. Tokens: dark ----------------------------------------------------- */
+
 [data-theme="dark"] {
   color-scheme: dark;
 
   --env-base: #221413;
+
   --mortar-tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='76' height='72'%3E%3Crect width='76' height='3' fill='%23453226'/%3E%3Crect y='36' width='76' height='3' fill='%23453226'/%3E%3Crect x='37' y='3' width='3' height='33' fill='%23453226'/%3E%3Crect y='39' width='3' height='33' fill='%23453226'/%3E%3C/svg%3E");
-  --wall-sheen: linear-gradient(160deg, rgb(255 226 180 / 0.05), transparent 42%);
+
+  --wall-sheen: linear-gradient(
+    160deg,
+    rgb(255 226 180 / 0.05),
+    transparent 42%
+  );
+
   --wall-wash:
-    radial-gradient(ellipse 240px 180px at 20% 12%, rgb(96 64 24 / 0.22), transparent 70%),
-    radial-gradient(ellipse 280px 220px at 82% 40%, rgb(0 0 0 / 0.5), transparent 70%),
-    radial-gradient(ellipse 240px 180px at 32% 74%, rgb(88 58 22 / 0.18), transparent 70%),
-    radial-gradient(ellipse 220px 160px at 70% 92%, rgb(0 0 0 / 0.55), transparent 70%);
-  --wall-vignette: radial-gradient(ellipse at 50% 38%, transparent 55%, rgb(0 0 0 / 0.5) 100%);
+    radial-gradient(
+      ellipse 240px 180px at 20% 12%,
+      rgb(96 64 24 / 0.22),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 280px 220px at 82% 40%,
+      rgb(0 0 0 / 0.5),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 240px 180px at 32% 74%,
+      rgb(88 58 22 / 0.18),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 220px 160px at 70% 92%,
+      rgb(0 0 0 / 0.55),
+      transparent 70%
+    );
+
+  --wall-vignette:
+    radial-gradient(
+      ellipse at 50% 38%,
+      transparent 55%,
+      rgb(0 0 0 / 0.5) 100%
+    );
 
   --page-bg: #201812;
   --page-tension-bg: #1f130c;
@@ -106,7 +176,6 @@
   --text-muted: #b3a68e;
   --masthead-text: #b3a68e;
 
-
   --accent: #ff9640;
   --accent-strong: #ffb27a;
   --accent-soft: rgb(255 150 64 / 0.12);
@@ -114,9 +183,14 @@
   --warm-line: rgb(227 194 115 / 0.32);
 
   --stamp-shadow: 4px 4px 0 rgb(0 0 0 / 0.8);
-  --pin-shadow: 0 1px 2px rgb(0 0 0 / 0.5), 0 8px 18px -8px rgb(0 0 0 / 0.7);
+
+  --pin-shadow:
+    0 1px 2px rgb(0 0 0 / 0.5),
+    0 8px 18px -8px rgb(0 0 0 / 0.7);
+
   --tape-bg: rgb(190 170 130 / 0.22);
   --tape-edge: rgb(227 194 115 / 0.25);
+
   --button-lip: #6e3410;
   --toggle-face: #7a5c2c;
   --toggle-face-hi: rgb(255 226 180 / 0.14);
@@ -128,7 +202,9 @@
   --status-interpretation: #e3c273;
   --status-oversimplification: #b48cff;
 
-  --display-shadow: 0 0 14px rgb(227 194 115 / 0.2), 0 0 2px rgb(227 194 115 / 0.32);
+  --display-shadow:
+    0 0 14px rgb(227 194 115 / 0.2),
+    0 0 2px rgb(227 194 115 / 0.32);
 
   --sun-transform: translateY(-130%) rotate(40deg);
   --sun-opacity: 0;
@@ -136,7 +212,8 @@
   --moon-opacity: 1;
 }
 
-/* ---- 3. Base ---------------------------------------------------------------- */
+/* ---- 3. Base ------------------------------------------------------------- */
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -164,7 +241,8 @@ button {
   outline-offset: 2px;
 }
 
-/* ---- 4. Environment: the 3D wall ---------------------------------------------- */
+/* ---- 4. Environment ------------------------------------------------------ */
+
 .app {
   position: relative;
   isolation: isolate;
@@ -177,7 +255,6 @@ button {
   transition: background-color 320ms var(--ease-calm);
 }
 
-/* Plaster + light sweep + weathering washes + mortar, all fixed behind content */
 .app::before {
   content: "";
   position: fixed;
@@ -190,11 +267,18 @@ button {
     var(--wall-wash),
     var(--wall-grain),
     var(--mortar-tile);
-  background-size: auto, auto, 120px 120px, 76px 72px;
-  background-repeat: no-repeat, no-repeat, repeat, repeat;
+  background-size:
+    auto,
+    auto,
+    120px 120px,
+    76px 72px;
+  background-repeat:
+    no-repeat,
+    no-repeat,
+    repeat,
+    repeat;
 }
 
-/* Corner falloff sells the depth */
 .app::after {
   content: "";
   position: fixed;
@@ -204,7 +288,6 @@ button {
   background: var(--wall-vignette);
 }
 
-/* Confrontation points: the wall itself darkens */
 .app--tension {
   --env-base: #4a2018;
 }
@@ -213,7 +296,8 @@ button {
   --env-base: #180d0c;
 }
 
-/* ---- 5. Masthead ----------------------------------------------------------------- */
+/* ---- 5. Masthead --------------------------------------------------------- */
+
 .masthead {
   width: 100%;
   max-width: 1080px;
@@ -249,7 +333,8 @@ button {
   text-shadow: 1px 1px 0 rgb(0 0 0 / 0.35);
 }
 
-/* ---- 6. The pinned page ------------------------------------------------------------ */
+/* ---- 6. Pinned page ------------------------------------------------------ */
+
 .story {
   width: 100%;
   display: flex;
@@ -270,7 +355,6 @@ button {
   transition: background-color 320ms var(--ease-calm);
 }
 
-/* Paper tooth */
 .story__page::before {
   content: "";
   position: absolute;
@@ -286,7 +370,8 @@ button {
   background: var(--page-tension-bg);
 }
 
-/* ---- 7. Scene shell + typography ------------------------------------------------------ */
+/* ---- 7. Scene + typography ----------------------------------------------- */
+
 .story__scene {
   position: relative;
   z-index: 1;
@@ -309,6 +394,7 @@ button {
     opacity: 0;
     transform: translateY(12px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -319,6 +405,7 @@ button {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -344,6 +431,20 @@ button {
   line-height: 1.65;
 }
 
+.story__word {
+  animation: word-in 240ms ease both;
+}
+
+@keyframes word-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 .story__afterword {
   display: grid;
   gap: 0.9rem;
@@ -359,20 +460,38 @@ button {
   line-height: 1.5;
 }
 
-/* ---- 8. Thread (pinned replies) ------------------------------------------------------------ */
+/* ---- 8. Thread ------------------------------------------------------------ */
+
+/*
+ * IMPORTANT:
+ * There is intentionally no min-height here.
+ * Future messages do not exist in the DOM yet.
+ * Therefore the paper physically grows as each message arrives.
+ */
+
 .story__thread {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 0.85rem;
   margin: 1.75rem 0;
 }
 
-/* ---- 9. Message bubble ------------------------------------------------------------------------- */
+.story__thread-item {
+  width: 100%;
+  animation: bubble-in 420ms var(--ease-settle) both;
+}
+
+.story__thread-item .message-bubble {
+  animation: none;
+}
+
+/* ---- 9. Message bubble ---------------------------------------------------- */
+
 .message-bubble {
   display: flex;
   align-items: flex-start;
   gap: 0.8rem;
   margin: 0;
-  animation: bubble-in 400ms var(--ease-settle) 140ms both;
 }
 
 @keyframes bubble-in {
@@ -380,6 +499,7 @@ button {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -448,7 +568,6 @@ button {
   color: var(--kicker);
 }
 
-/* Channel posts: written notices, not people */
 .message-bubble--channel .message-bubble__main {
   border-top-left-radius: var(--radius-bubble);
 }
@@ -506,11 +625,16 @@ button {
   overflow-wrap: anywhere;
 }
 
-/* ---- 10. Voice note: real audio + tactile wooden control --------------------------------------- */
+/* ---- 10. Voice note ------------------------------------------------------ */
+
 .voice-note {
   margin-top: 0.65rem;
   padding-top: 0.65rem;
   border-top: 1px dashed var(--text-muted);
+}
+
+.voice-note audio {
+  display: none;
 }
 
 .voice-note__controls {
@@ -529,7 +653,11 @@ button {
   border: 1px solid rgb(55 24 12 / 0.7);
   border-radius: 9px;
   background:
-    linear-gradient(135deg, rgb(255 224 168 / 0.32), transparent 42%),
+    linear-gradient(
+      135deg,
+      rgb(255 224 168 / 0.32),
+      transparent 42%
+    ),
     repeating-linear-gradient(
       8deg,
       var(--accent-strong) 0 3px,
@@ -634,15 +762,59 @@ button {
 }
 
 @keyframes voice-breathe {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.045);
   }
 }
 
-/* ---- 11. Evidence cards: taped claims, pulled from the wall -------------------------------------- */
+/* ---- 11. Typing cue ------------------------------------------------------- */
+
+.story__cue {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 14px;
+  padding: 0.4rem 0.15rem 0.1rem;
+}
+
+.story__cue-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--text-muted);
+  animation: typing-wave var(--typing-cycle, 900ms)
+    ease-in-out infinite;
+}
+
+.story__cue-dot:nth-child(2) {
+  animation-delay: 120ms;
+}
+
+.story__cue-dot:nth-child(3) {
+  animation-delay: 240ms;
+}
+
+@keyframes typing-wave {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0) scale(0.92);
+    opacity: 0.55;
+  }
+
+  30% {
+    transform: translateY(-4px) scale(1.12);
+    opacity: 1;
+  }
+}
+
+/* ---- 12. Evidence -------------------------------------------------------- */
+
 .evidence {
   display: grid;
   gap: 1.4rem;
@@ -660,7 +832,6 @@ button {
   animation: bubble-in 400ms var(--ease-settle) both;
 }
 
-/* Tape strip holding the card to the wall (never clipped: no overflow here) */
 .evidence-card::before {
   content: "";
   position: absolute;
@@ -675,16 +846,41 @@ button {
   pointer-events: none;
 }
 
-.evidence-card:nth-child(2) { animation-delay: 70ms; }
-.evidence-card:nth-child(3) { animation-delay: 140ms; }
-.evidence-card:nth-child(4) { animation-delay: 210ms; }
-.evidence-card:nth-child(n + 5) { animation-delay: 280ms; }
+.evidence-card:nth-child(2) {
+  animation-delay: 70ms;
+}
 
-.evidence-card--documented { --tone: var(--status-documented); }
-.evidence-card--supported { --tone: var(--status-supported); }
-.evidence-card--unsourced { --tone: var(--status-unsourced); }
-.evidence-card--interpretation { --tone: var(--status-interpretation); }
-.evidence-card--oversimplification { --tone: var(--status-oversimplification); }
+.evidence-card:nth-child(3) {
+  animation-delay: 140ms;
+}
+
+.evidence-card:nth-child(4) {
+  animation-delay: 210ms;
+}
+
+.evidence-card:nth-child(n + 5) {
+  animation-delay: 280ms;
+}
+
+.evidence-card--documented {
+  --tone: var(--status-documented);
+}
+
+.evidence-card--supported {
+  --tone: var(--status-supported);
+}
+
+.evidence-card--unsourced {
+  --tone: var(--status-unsourced);
+}
+
+.evidence-card--interpretation {
+  --tone: var(--status-interpretation);
+}
+
+.evidence-card--oversimplification {
+  --tone: var(--status-oversimplification);
+}
 
 .evidence-card__label {
   font-size: 0.68rem;
@@ -718,7 +914,8 @@ button {
   color: var(--text-muted);
 }
 
-/* ---- 12. Exhibit: the silences and the numbers ------------------------------------------------------ */
+/* ---- 13. Exhibit --------------------------------------------------------- */
+
 .exhibit {
   margin: 2.25rem 0 1.75rem;
   text-align: center;
@@ -757,7 +954,8 @@ button {
   color: var(--text-muted);
 }
 
-/* ---- 13. Compare: what happened vs what was added ------------------------------------------------------ */
+/* ---- 14. Compare --------------------------------------------------------- */
+
 .compare {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -785,8 +983,13 @@ button {
   color: var(--tone, var(--text));
 }
 
-.compare__column--left { --tone: var(--status-documented); }
-.compare__column--right { --tone: var(--status-oversimplification); }
+.compare__column--left {
+  --tone: var(--status-documented);
+}
+
+.compare__column--right {
+  --tone: var(--status-oversimplification);
+}
 
 .compare__list {
   display: grid;
@@ -795,10 +998,10 @@ button {
 }
 
 .compare__list li {
+  position: relative;
   padding-left: 1rem;
   font-size: 0.92rem;
   line-height: 1.5;
-  position: relative;
 }
 
 .compare__list li::before {
@@ -808,7 +1011,8 @@ button {
   color: var(--text-muted);
 }
 
-/* ---- 14. Pairs: original → context ------------------------------------------------------------------------- */
+/* ---- 15. Pairs ------------------------------------------------------------ */
+
 .pairs {
   display: grid;
   gap: 1.05rem;
@@ -838,7 +1042,8 @@ button {
   color: var(--text-muted);
 }
 
-/* ---- 15. Wall: the annotated message ------------------------------------------------------------------------ */
+/* ---- 16. Wall ------------------------------------------------------------- */
+
 .wall {
   display: grid;
   gap: 0.6rem;
@@ -890,7 +1095,8 @@ button {
   color: var(--text);
 }
 
-/* ---- 16. Colophon ----------------------------------------------------------------------------------------------- */
+/* ---- 17. Colophon --------------------------------------------------------- */
+
 .colophon {
   margin-top: 3rem;
   padding-top: 2rem;
@@ -920,7 +1126,8 @@ button {
   text-shadow: var(--display-shadow);
 }
 
-/* ---- 17. Choices: interaction cues, not navigation ---------------------------------------------------------------- */
+/* ---- 18. Choices ---------------------------------------------------------- */
+
 .story__choices {
   display: flex;
   flex-direction: column;
@@ -1000,107 +1207,15 @@ button {
     opacity: 0;
     transform: translateY(8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-/* ---- 18. Cadence: React owns arrival timing ---------------------------------------------- */
+/* ---- 19. Theme switch ---------------------------------------------------- */
 
-/*
- * StoryScreen supplies --message-delay.
- * CSS is responsible only for animating the bubble at that supplied time.
- * This keeps timing in one place instead of duplicating the schedule here.
- */
-
-.story__thread-item {
-  animation: bubble-in 520ms var(--ease-settle) var(--message-delay, 0ms) both;
-}
-
-.story__thread-item .message-bubble {
-  animation: none;
-}
-
-/* Confrontation threads still arrive rapidly, but through the same mechanism. */
-.story__page--mood-tension .story__thread-item {
-  --message-delay: 0ms;
-}
-
-.story__page--mood-tension .story__thread-item:nth-child(2) {
-  --message-delay: 120ms;
-}
-
-.story__page--mood-tension .story__thread-item:nth-child(3) {
-  --message-delay: 240ms;
-}
-
-.story__page--mood-tension .story__thread-item:nth-child(4) {
-  --message-delay: 360ms;
-}
-
-.story__page--mood-tension .story__thread-item:nth-child(5) {
-  --message-delay: 480ms;
-}
-
-.story__page--mood-tension .story__thread-item:nth-child(6) {
-  --message-delay: 600ms;
-}
-
-.story__page--mood-tension .story__thread-item:nth-child(n + 7) {
-  --message-delay: 720ms;
-}
-
-
-/* ---- 19. Typing cue ---------------------------------------------------------------------- */
-
-.story__cue {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  min-height: 14px;
-  padding: 0.4rem 0.15rem 0.1rem;
-  animation: cue-out 500ms var(--cue-end, 3000ms) forwards;
-}
-
-.story__cue-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
-  background: var(--text-muted);
-  animation: typing-wave 900ms ease-in-out infinite;
-}
-
-.story__cue-dot:nth-child(2) {
-  animation-delay: 120ms;
-}
-
-.story__cue-dot:nth-child(3) {
-  animation-delay: 240ms;
-}
-
-@keyframes typing-wave {
-  0%,
-  60%,
-  100% {
-    transform: translateY(0) scale(0.92);
-    opacity: 0.55;
-  }
-
-  30% {
-    transform: translateY(-4px) scale(1.12);
-    opacity: 1;
-  }
-}
-
-@keyframes cue-out {
-  to {
-    opacity: 0;
-    visibility: hidden;
-  }
-}
-
-/* ---- 19. Theme switch: the page dries, yellows and crumbles away, top to bottom --------------------------------------- */
 html[data-flip="out"] .story__page {
   animation: page-decay-out 380ms var(--ease-calm) forwards;
   pointer-events: none;
@@ -1117,6 +1232,7 @@ html[data-flip="in"] .story__page {
   40% {
     filter: sepia(0.5) contrast(1.15);
   }
+
   to {
     clip-path: inset(100% 0 0 0);
     filter: sepia(0.75) contrast(1.25) brightness(0.9);
@@ -1128,13 +1244,15 @@ html[data-flip="in"] .story__page {
     clip-path: inset(0 0 100% 0);
     filter: sepia(0.6) contrast(1.2);
   }
+
   to {
     clip-path: inset(0);
     filter: none;
   }
 }
 
-/* ---- 20. Theme toggle: the brass cataloging stamp ------------------------------------------------------------------------- */
+/* ---- 20. Theme toggle ---------------------------------------------------- */
+
 .theme-toggle {
   position: relative;
   flex: none;
@@ -1145,7 +1263,11 @@ html[data-flip="in"] .story__page {
   border: 2px solid rgb(0 0 0 / 0.55);
   border-radius: var(--radius-stamp);
   background:
-    radial-gradient(circle at 35% 30%, var(--toggle-face-hi), transparent 55%),
+    radial-gradient(
+      circle at 35% 30%,
+      var(--toggle-face-hi),
+      transparent 55%
+    ),
     var(--toggle-face);
   color: var(--toggle-ink);
   box-shadow:
@@ -1186,7 +1308,17 @@ html[data-flip="in"] .story__page {
   opacity: var(--moon-opacity);
 }
 
-/* ---- 21. Responsive ----------------------------------------------------------------------------------------------------------- */
+/* ---- 21. Floating theme dock --------------------------------------------- */
+
+.theme-dock {
+  position: fixed;
+  top: 0.9rem;
+  right: 0.9rem;
+  z-index: 70;
+}
+
+/* ---- 22. Responsive ------------------------------------------------------ */
+
 @media (max-width: 679px) {
   .compare {
     grid-template-columns: 1fr;
@@ -1234,9 +1366,11 @@ html[data-flip="in"] .story__page {
   }
 }
 
-/* ---- 22. Reduced motion: everything static, nothing delayed ---------------------------------------------------------------------- */
+/* ---- 23. Reduced motion -------------------------------------------------- */
+
 @media (prefers-reduced-motion: reduce) {
   .story__scene,
+  .story__thread-item,
   .message-bubble,
   .choice-button,
   .evidence-card,
@@ -1244,13 +1378,13 @@ html[data-flip="in"] .story__page {
     animation: none;
   }
 
-  .story__page .story__thread .message-bubble {
-    animation-delay: 0ms !important;
+  .story__word {
+    animation: none;
+    opacity: 1;
   }
 
-  .story__choices > .choice-button,
-  .evidence-card {
-    animation-delay: 0ms;
+  .story__cue {
+    display: none;
   }
 
   html[data-flip="out"] .story__page,
@@ -1270,80 +1404,3 @@ html[data-flip="in"] .story__page {
     transition: none;
   }
 }
-/* Floating toggle: follows the reader's scroll, always top-right. */
-.theme-dock {
-  position: fixed;
-  top: 0.9rem;
-  right: 0.9rem;
-  z-index: 70;
-}
-/* Typing cue: three dots travel left-to-right like a small wave. */
-.story__cue {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  min-height: 14px;
-  padding: 0.4rem 0.15rem 0.1rem;
-  animation: cue-out 500ms var(--cue-end, 3450ms) forwards;
-}
-
-.story__cue-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
-  background: var(--text-muted);
-  animation: typing-wave 900ms ease-in-out infinite;
-}
-
-.story__cue-dot:nth-child(2) {
-  animation-delay: 120ms;
-}
-
-.story__cue-dot:nth-child(3) {
-  animation-delay: 240ms;
-}
-
-@keyframes typing-wave {
-  0%,
-  60%,
-  100% {
-    transform: translateY(0) scale(0.92);
-    opacity: 0.55;
-  }
-
-  30% {
-    transform: translateY(-4px) scale(1.12);
-    opacity: 1;
-  }
-}
-
-@keyframes cue-out {
-  to {
-    opacity: 0;
-    visibility: hidden;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .story__cue {
-    display: none;
-  }
-  .story__word {
-    animation: none;
-    opacity: 1;
-  }
-}
-/* Narration writes itself onto the wall, one word at a time. */
-.story__word {
-  animation: word-in 240ms ease both;
-}
-
-@keyframes word-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-

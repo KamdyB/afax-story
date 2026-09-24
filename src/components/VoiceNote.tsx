@@ -8,8 +8,34 @@ interface VoiceNoteProps {
 
 const EMPTY_TIME = "0:00";
 
+function resolveAudioSource(src: string): string {
+  /*
+   * Audio files live in /public/audio/.
+   *
+   * import.meta.env.BASE_URL is:
+   *   "/" locally
+   *   "/afax-story/" on GitHub Pages
+   *
+   * This prevents GitHub Pages from requesting /audio/file.mp3
+   * from the domain root instead of /afax-story/audio/file.mp3.
+   */
+  if (/^(https?:|data:|blob:)/i.test(src)) {
+    return src;
+  }
+
+  const base = import.meta.env.BASE_URL.endsWith("/")
+    ? import.meta.env.BASE_URL
+    : `${import.meta.env.BASE_URL}/`;
+
+  const cleanSrc = src.replace(/^\/+/, "");
+
+  return `${base}${cleanSrc}`;
+}
+
 function formatTime(seconds: number): string {
-  if (!Number.isFinite(seconds) || seconds < 0) return EMPTY_TIME;
+  if (!Number.isFinite(seconds) || seconds < 0) {
+    return EMPTY_TIME;
+  }
 
   const totalSeconds = Math.floor(seconds);
   const minutes = Math.floor(totalSeconds / 60);
@@ -20,10 +46,13 @@ function formatTime(seconds: number): string {
 
 export default function VoiceNote({ audio }: VoiceNoteProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
   const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [hasError, setHasError] = useState(false);
+
+  const source = resolveAudioSource(audio.src);
 
   useEffect(() => {
     const element = audioRef.current;
@@ -38,10 +67,11 @@ export default function VoiceNote({ audio }: VoiceNoteProps) {
     element.pause();
     element.currentTime = 0;
     element.load();
-  }, [audio.src]);
+  }, [source]);
 
   const togglePlayback = async () => {
     const element = audioRef.current;
+
     if (!element || hasError) return;
 
     if (element.paused) {
@@ -51,6 +81,7 @@ export default function VoiceNote({ audio }: VoiceNoteProps) {
         setHasError(true);
         setIsPlaying(false);
       }
+
       return;
     }
 
@@ -58,30 +89,43 @@ export default function VoiceNote({ audio }: VoiceNoteProps) {
   };
 
   const progress =
-    duration > 0 ? Math.min(100, Math.max(0, (currentTime / duration) * 100)) : 0;
+    duration > 0
+      ? Math.min(100, Math.max(0, (currentTime / duration) * 100))
+      : 0;
 
   return (
     <div className="voice-note">
       <audio
         ref={audioRef}
-        src={audio.src}
         preload="metadata"
+        src={source}
         onLoadedMetadata={(event) => {
           const nextDuration = event.currentTarget.duration;
-          setDuration(Number.isFinite(nextDuration) ? nextDuration : 0);
+
+          if (Number.isFinite(nextDuration)) {
+            setDuration(nextDuration);
+          }
         }}
         onDurationChange={(event) => {
           const nextDuration = event.currentTarget.duration;
-          setDuration(Number.isFinite(nextDuration) ? nextDuration : 0);
+
+          if (Number.isFinite(nextDuration)) {
+            setDuration(nextDuration);
+          }
         }}
         onTimeUpdate={(event) => {
           setCurrentTime(event.currentTarget.currentTime);
         }}
-        onPlay={() => setIsPlaying(true)}
-        onPause={() => setIsPlaying(false)}
-        onEnded={() => {
+        onPlay={() => {
+          setIsPlaying(true);
+          setHasError(false);
+        }}
+        onPause={() => {
           setIsPlaying(false);
-          setCurrentTime(0);
+        }}
+        onEnded={(event) => {
+          setIsPlaying(false);
+          setCurrentTime(event.currentTarget.duration || 0);
         }}
         onError={() => {
           setHasError(true);
@@ -92,11 +136,25 @@ export default function VoiceNote({ audio }: VoiceNoteProps) {
       <div className="voice-note__controls">
         <button
           type="button"
-          className={`voice-note__toggle${isPlaying ? " voice-note__toggle--playing" : ""}`}
+          className={`voice-note__toggle${
+            isPlaying ? " voice-note__toggle--playing" : ""
+          }`}
           onClick={togglePlayback}
           disabled={hasError}
-          aria-label={hasError ? "Voice note unavailable" : isPlaying ? "Pause voice note" : "Play voice note"}
-          title={hasError ? "Voice note unavailable" : isPlaying ? "Pause voice note" : "Play voice note"}
+          aria-label={
+            hasError
+              ? "Voice note unavailable"
+              : isPlaying
+                ? "Pause voice note"
+                : "Play voice note"
+          }
+          title={
+            hasError
+              ? "Voice note unavailable"
+              : isPlaying
+                ? "Pause voice note"
+                : "Play voice note"
+          }
         >
           {isPlaying ? (
             <Pause size={14} strokeWidth={2.4} aria-hidden="true" />
@@ -106,7 +164,9 @@ export default function VoiceNote({ audio }: VoiceNoteProps) {
         </button>
 
         <div
-          className={`voice-note__track${hasError ? " voice-note__track--unavailable" : ""}`}
+          className={`voice-note__track${
+            hasError ? " voice-note__track--unavailable" : ""
+          }`}
           role="progressbar"
           aria-label="Voice note progress"
           aria-valuemin={0}
