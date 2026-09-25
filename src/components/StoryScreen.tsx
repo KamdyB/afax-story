@@ -107,10 +107,10 @@ export default function StoryScreen({ scene, onChoice }: StoryScreenProps) {
 
   const heading = scene.title ?? "[UNTITLED SCENE]";
 
-  // Ping as each newly rendered message starts arriving (skipped under reduced motion).
+  // Ping as each message of a cascade starts arriving. Sound is not
+  // motion — it still plays when the reader prefers reduced motion.
   const handleAnimationStart = (event: AnimationEvent<HTMLElement>) => {
     if (event.animationName !== "bubble-in") return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     playMessagePing();
   };
 

@@ -1,7 +1,9 @@
 /**
  * Synthesized story sounds. No audio files, no autoplay: the context is
- * created and unlocked on the reader's first interaction, and every sound
- * stays silent if audio is unavailable or reduced motion is requested.
+ * created on the reader's first interaction, and every sound stays silent
+ * if audio is unavailable. Mobile browsers re-suspend the context at any
+ * time (screen lock, tab switch, idle), so every gesture attempts a resume
+ * and the message ping recovers best-effort.
  */
 
 let context: AudioContext | null = null;
@@ -54,7 +56,11 @@ function connectToOutput(node: AudioNode): void {
   }
 }
 
-/** Unlocks audio on the reader's first interaction. Returns the cleanup. */
+/**
+ * Keeps audio alive for the whole session: mobile browsers suspend the
+ * context whenever they like, so the listeners stay attached and every
+ * gesture gets a resume attempt. Returns the cleanup.
+ */
 export function initAudioOnFirstGesture(): () => void {
   const unlock = () => {
     if (context === null) {
@@ -62,11 +68,15 @@ export function initAudioOnFirstGesture(): () => void {
     }
     if (context !== null) {
       ensureReverb();
-      void context.resume();
+      if (context.state === "suspended") {
+        void context.resume().catch(() => {
+          /* refused — the next gesture tries again */
+        });
+      }
     }
   };
-  window.addEventListener("pointerdown", unlock, { once: true });
-  window.addEventListener("keydown", unlock, { once: true });
+  window.addEventListener("pointerdown", unlock);
+  window.addEventListener("keydown", unlock);
   return () => {
     window.removeEventListener("pointerdown", unlock);
     window.removeEventListener("keydown", unlock);
@@ -75,30 +85,47 @@ export function initAudioOnFirstGesture(): () => void {
 
 /** Soft two-tone ping through a gentle filter and room — a hushed arrival. */
 export function playMessagePing(): void {
-  if (context === null || context.state !== "running") return;
+  const audio = context;
+  if (audio === null) return;
 
-  const now = context.currentTime;
-  const oscillator = context.createOscillator();
-  const filter = context.createBiquadFilter();
-  const gain = context.createGain();
+  const start = () => {
+    if (audio.state !== "running") return;
+    const now = audio.currentTime;
+    const oscillator = audio.createOscillator();
+    const filter = audio.createBiquadFilter();
+    const gain = audio.createGain();
 
-  oscillator.type = "sine";
-  oscillator.frequency.setValueAtTime(740, now);
-  oscillator.frequency.exponentialRampToValueAtTime(560, now + 0.35);
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(740, now);
+    oscillator.frequency.exponentialRampToValueAtTime(560, now + 0.35);
 
-  filter.type = "lowpass";
-  filter.frequency.value = 1800;
+    filter.type = "lowpass";
+    filter.frequency.value = 1800;
 
-  gain.gain.setValueAtTime(0.0001, now);
-  gain.gain.linearRampToValueAtTime(0.04, now + 0.06);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.55);
+    // Slightly louder for phone speakers, still far from an alert.
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.linearRampToValueAtTime(0.06, now + 0.06);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.55);
 
-  oscillator.connect(filter);
-  filter.connect(gain);
-  connectToOutput(gain);
+    oscillator.connect(filter);
+    filter.connect(gain);
+    connectToOutput(gain);
 
-  oscillator.start(now);
-  oscillator.stop(now + 0.6);
+    oscillator.start(now);
+    oscillator.stop(now + 0.6);
+  };
+
+  if (audio.state === "running") {
+    start();
+    return;
+  }
+  // Best-effort recovery when mobile suspended the context mid-session.
+  void audio
+    .resume()
+    .then(start)
+    .catch(() => {
+      /* stay silent — never throw into the console */
+    });
 }
 
 /** Cached white-noise buffer for the page-turn wipe. */
@@ -120,30 +147,25 @@ export function playWallWipe(): void {
   if (context === null || context.state !== "running") return;
   const buffer = getWipeBuffer();
   if (buffer === null) return;
-
   const now = context.currentTime;
   const noise = context.createBufferSource();
   const filter = context.createBiquadFilter();
   const gain = context.createGain();
-
   noise.buffer = buffer;
-
   filter.type = "bandpass";
   filter.Q.value = 0.8;
   filter.frequency.setValueAtTime(350, now);
   filter.frequency.exponentialRampToValueAtTime(1400, now + 0.45);
-
   gain.gain.setValueAtTime(0.0001, now);
   gain.gain.linearRampToValueAtTime(0.05, now + 0.05);
   gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
-
   noise.connect(filter);
   filter.connect(gain);
   connectToOutput(gain);
-
   noise.start(now);
   noise.stop(now + 0.5);
 }
+
 /** A distinct small tone per annotated word on the final wall. */
 type PinTone = { type: OscillatorType; freqs: readonly number[]; filter: number };
 
