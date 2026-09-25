@@ -1474,3 +1474,14 @@ html[data-flip="in"] .story__page {
   color: var(--text-muted);
   cursor: default;
 }
+/* Ambient toggle shares the theme-toggle stamp; stack the wall controls. */
+.ambience-toggle .lucide {
+  display: block;
+}
+
+.theme-dock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  align-items: flex-end;
+}

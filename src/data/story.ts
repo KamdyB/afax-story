@@ -718,6 +718,7 @@ const story: Record<string, Scene> = {
       "Social-media posts shown in this experience are reconstructed composites inspired by public discourse.",
       "#ImiliInstitute #AfricaAgainstXenophobia #UNESCO #Africa",
       "Context drawn from reporting by Premium Times, The Guardian Nigeria and The Rio Times(July 2026), and coverage of her SAMA32 speech by BellaNaija and Pulse Ghana (August 2026).",
+      "Ambient sound: “zehendrew-calm-nature-ambience-379478.mp3” by zehendrew, via Pixabay (pixabay.com).",
       "The Show That Disappeared",
       "How a real grievance became a cross-border argument",
     ],

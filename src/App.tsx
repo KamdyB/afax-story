@@ -4,6 +4,7 @@ import ThemeToggle from "./components/ThemeToggle";
 import { initAudioOnFirstGesture } from "./audio";
 import { START_SCENE_ID, getScene } from "./data/story";
 import type { Scene } from "./data/story";
+import AmbienceToggle from "./components/AmbienceToggle";
 
 export default function App() {
   const [scene, setScene] = useState<Scene>(() => getScene(START_SCENE_ID));
@@ -15,6 +16,7 @@ export default function App() {
     <div className="app">
       {/* The toggle floats: it stays pinned top-right while the page scrolls. */}
       <div className="theme-dock">
+        <AmbienceToggle />
         <ThemeToggle />
       </div>
       <header className="masthead">
