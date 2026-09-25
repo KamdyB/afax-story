@@ -128,42 +128,68 @@ export function playMessagePing(): void {
     });
 }
 
-/** Cached white-noise buffer for the page-turn wipe. */
+/** Cached soft paper-rustle buffer for the page-turn wipe. */
 function getWipeBuffer(): AudioBuffer | null {
   if (context === null) return null;
   if (wipeBuffer === null) {
-    const length = Math.floor(context.sampleRate * 0.45);
+    const length = Math.floor(context.sampleRate * 0.6);
     wipeBuffer = context.createBuffer(1, length, context.sampleRate);
     const samples = wipeBuffer.getChannelData(0);
+    // One-pole smoothing turns white noise into a soft paper rustle.
+    let last = 0;
     for (let i = 0; i < length; i += 1) {
-      samples[i] = Math.random() * 2 - 1;
+      last = last * 0.72 + (Math.random() * 2 - 1) * 0.28;
+      samples[i] = last;
+    }
+    // Fade the tail to zero so the buffer can never end on a click.
+    const fade = Math.floor(context.sampleRate * 0.05);
+    for (let i = 0; i < fade; i += 1) {
+      samples[length - 1 - i] *= i / fade;
     }
   }
   return wipeBuffer;
 }
 
+/** Timestamp of the last wipe, so rapid turns rustle instead of chopping. */
+let lastWipeAt = -1;
+
 /** A paper-wipe breath across the wall when the scene turns. */
 export function playWallWipe(): void {
   if (context === null || context.state !== "running") return;
+  const now = context.currentTime;
+  if (lastWipeAt >= 0 && now - lastWipeAt < 0.25) return;
+  lastWipeAt = now;
+
   const buffer = getWipeBuffer();
   if (buffer === null) return;
-  const now = context.currentTime;
+
   const noise = context.createBufferSource();
-  const filter = context.createBiquadFilter();
+  const highpass = context.createBiquadFilter();
+  const lowpass = context.createBiquadFilter();
   const gain = context.createGain();
+
   noise.buffer = buffer;
-  filter.type = "bandpass";
-  filter.Q.value = 0.8;
-  filter.frequency.setValueAtTime(350, now);
-  filter.frequency.exponentialRampToValueAtTime(1400, now + 0.45);
+
+  // Keep a little body so it never goes muddy on phone speakers.
+  highpass.type = "highpass";
+  highpass.frequency.value = 250;
+
+  lowpass.type = "lowpass";
+  lowpass.frequency.setValueAtTime(500, now);
+  lowpass.frequency.exponentialRampToValueAtTime(1400, now + 0.6);
+
+  // Slow attack: a breath, not an impact.
   gain.gain.setValueAtTime(0.0001, now);
-  gain.gain.linearRampToValueAtTime(0.05, now + 0.05);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
-  noise.connect(filter);
-  filter.connect(gain);
+  gain.gain.linearRampToValueAtTime(0.04, now + 0.12);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.6);
+
+  noise.connect(highpass);
+  highpass.connect(lowpass);
+  lowpass.connect(gain);
   connectToOutput(gain);
+
   noise.start(now);
-  noise.stop(now + 0.5);
+  noise.stop(now + 0.6);
 }
 
 /** A distinct small tone per annotated word on the final wall. */
